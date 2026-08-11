@@ -1,14 +1,4 @@
-type listing = {
-  title: string;
-  price: number;
-  zone: string;
-  m2: number;
-  rooms: string | null;
-  floor: number;
-  id_extern: string;
-};
-
-let listings: listing[] = [];
+import type { Listing } from "../types/listing.js";
 
 const sectoare = [
   "Botanica",
@@ -36,8 +26,8 @@ function extrageCamere(str: string): string | null {
   return match ? match[0] : null;
 }
 
-async function scrape() {
-  const response = await fetch("https://999.md/ro/40828089");
+export async function scrape(link: string) {
+  const response = await fetch(link);
   const html = await response.text();
 
   const startJSON = html.indexOf("adView");
@@ -79,7 +69,7 @@ async function scrape() {
     return;
   }
 
-  const listing = {
+  const listing: Listing = {
     title: extras.title,
     price: extras.price.value.value,
     zone: extras.district.value.translated,
@@ -88,19 +78,5 @@ async function scrape() {
     floor: floor.feature.value.translated,
     id_extern: extras.id,
   };
-
-  const alereadyExists = listings.some(
-    (item) => item.id_extern === listing.id_extern,
-  );
-
-  if (!alereadyExists) {
-    listings.push(listing);
-    console.log(listings[listings.length - 1]);
-  } else {
-    console.log(
-      `Listing with ID ${listing.id_extern} already exists in listings.`,
-    );
-  }
+  return listing;
 }
-
-scrape();
