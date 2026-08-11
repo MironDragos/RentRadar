@@ -3,7 +3,7 @@ type listing = {
   price: number;
   zone: string;
   m2: number;
-  rooms: number;
+  rooms: string | null;
   floor: number;
   id_extern: string;
 };
@@ -37,7 +37,7 @@ function extrageCamere(str: string): string | null {
 }
 
 async function scrape() {
-  const response = await fetch("https://999.md/ro/102555457");
+  const response = await fetch("https://999.md/ro/40828089");
   const html = await response.text();
 
   const startJSON = html.indexOf("adView");
@@ -79,24 +79,28 @@ async function scrape() {
     return;
   }
 
-  console.log(extras.id); //external_id
-  console.log(extras.title); //title
-  console.log(extras.isExpired); //active
-  console.log(extras.price.value.value); //price
-  console.log(extras.district.value.translated); //zone
-  console.log(extrageCamere(rooms.feature.value.translated)); //rooms
-  console.log(surface.feature.value.value); //m2
-  console.log(floor.feature.value.translated); //floor
+  const listing = {
+    title: extras.title,
+    price: extras.price.value.value,
+    zone: extras.district.value.translated,
+    m2: surface.feature.value.value,
+    rooms: extrageCamere(rooms.feature.value.translated),
+    floor: floor.feature.value.translated,
+    id_extern: extras.id,
+  };
 
-  /*listings.push({
-    title: "ion",
-    price: 12,
-    zone: "",
-    m2: 12,
-    rooms: 12,
-    floor: 2,
-    id_extern: 135233
-  })*/
+  const alereadyExists = listings.some(
+    (item) => item.id_extern === listing.id_extern,
+  );
+
+  if (!alereadyExists) {
+    listings.push(listing);
+    console.log(listings[listings.length - 1]);
+  } else {
+    console.log(
+      `Listing with ID ${listing.id_extern} already exists in listings.`,
+    );
+  }
 }
 
 scrape();
