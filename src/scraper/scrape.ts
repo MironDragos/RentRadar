@@ -12,21 +12,32 @@ function randomDelay(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-const camere = ["1", "2", "3", "4", "5", "O"];
+const camere = ["1", "2", "3", "4", "5"];
 
 function extractRoom(str: string): string | null {
   const pattern = new RegExp(`\\b(${camere.join("|")})\\b`, "i");
-  const match = str.match(pattern);
+  let match = str.match(pattern);
 
-  return match ? match[0] : null;
+  return match ? match[0] : "0";
+}
+function extractFloor(str: string): string {
+  const match = str.match(/\d+/);
+  return match ? match[0] : "0";
 }
 
 export async function scrape(link: string) {
   const response = await fetch(link, {
     headers: { "User-Agent": randomUA },
   });
-  const html = await response.text();
 
+  if (
+    response.url.includes("999.md_request_limit.html") ||
+    response.status === 429
+  ) {
+    throw new Error("RATE_LIMITED");
+  }
+
+  const html = await response.text();
   const startJSON = html.indexOf("adView");
   const arrayJSON = html.substring(startJSON);
   let endJSON = 0;
@@ -76,7 +87,7 @@ export async function scrape(link: string) {
     zone: extras.district.value.translated,
     m2: m2,
     rooms: Number(extractRoom(rooms.feature.value.translated)),
-    floor: Number(floor.feature.value.translated),
+    floor: Number(extractFloor(floor.feature.value.translated)),
   };
   await sleep(randomDelay(500, 1500));
   return listing;

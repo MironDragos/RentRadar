@@ -1,6 +1,5 @@
 import { DB } from "../db/db.js";
 import type { Listing } from "../types/listing.js";
-import { listings } from "../../listings.js";
 // findByExternalId(), insertListing(), updatePrice(), updateLastCheck()
 
 export async function findByExternalId(id: string) {
@@ -42,13 +41,3 @@ export async function updateLastCheck(id: string) {
   );
   return rezultat.rowCount;
 }
-
-/* 
-findByExternalId("104945499");
-if (listings[30]) {
-  insertListing(listings[30]);
-} 
-updatePrice(166000, "104907787");
-
-updateLastCheck("105048065");
-*/
