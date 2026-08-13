@@ -89,6 +89,6 @@ export async function scrape(link: string) {
     rooms: Number(extractRoom(rooms.feature.value.translated)),
     floor: Number(extractFloor(floor.feature.value.translated)),
   };
-  await sleep(randomDelay(500, 1500));
+  await sleep(randomDelay(400, 1000));
   return listing;
 }

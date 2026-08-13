@@ -20,34 +20,39 @@ export async function collectLinks(pages: number) {
   let preTotalLinks: string[][] = [];
 
   for (var i = 0; i < pages; i++) {
-    await page.goto(
-      `https://999.md/ro/list/real-estate/apartments-and-rooms?page=${i + 1}`,
-    );
-    await page.waitForSelector("a h4");
+    try {
+      await page.goto(
+        `https://999.md/ro/list/real-estate/apartments-and-rooms?page=${i + 1}`,
+      );
+      await page.waitForSelector("a h4");
 
-    const links = (await page.evaluate(() => {
-      const ads = new Set();
+      const links = (await page.evaluate(() => {
+        const ads = new Set();
 
-      document.querySelectorAll("a").forEach((a) => {
-        const href = a.getAttribute("href");
+        document.querySelectorAll("a").forEach((a) => {
+          const href = a.getAttribute("href");
 
-        if (href && href.startsWith("/ro/")) {
-          const id = href.split("/ro/")[1]?.split("?")[0];
+          if (href && href.startsWith("/ro/")) {
+            const id = href.split("/ro/")[1]?.split("?")[0];
 
-          if (id && String(Number(id)) === id) {
-            ads.add("https://999.md/ro/" + id);
+            if (id && String(Number(id)) === id) {
+              ads.add("https://999.md/ro/" + id);
+            }
           }
-        }
-      });
+        });
 
-      return Array.from(ads);
-    })) as string[];
+        return Array.from(ads);
+      })) as string[];
 
-    preTotalLinks.push(links);
-    console.log(`Am colectat cu succes ${links.length} linkuri`);
+      preTotalLinks.push(links);
+      console.log(`Am colectat cu succes ${links.length} linkuri`);
+    } catch (error: any) {
+      console.log(`Eroare la pagina ${i + 1}: ${error.message}`);
+      continue;
+    }
+
     await sleep(randomDelay(1000, 3000));
   }
-
   const totalLinks: string[] = [...new Set(preTotalLinks.flat())];
 
   await browser.close();
