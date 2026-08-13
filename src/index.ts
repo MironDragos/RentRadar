@@ -1,115 +1,22 @@
 import { scrape } from "./scraper/scrape.js";
+import { links } from "../links.js";
+import type { Listing } from "./types/listing.js";
+import { writeFile } from "fs/promises";
 
-const links: string[] = [
-  "https://999.md/ro/105027284",
-  "https://999.md/ro/105005000",
-  "https://999.md/ro/105034852",
-  "https://999.md/ro/105045978",
-  "https://999.md/ro/104961834",
-  "https://999.md/ro/102954162",
-  "https://999.md/ro/105041030",
-  "https://999.md/ro/103119104",
-  "https://999.md/ro/105019820",
-  "https://999.md/ro/102832078",
-  "https://999.md/ro/103462565",
-  "https://999.md/ro/103951276",
-  "https://999.md/ro/104707827",
-  "https://999.md/ro/63151799",
-  "https://999.md/ro/85910297",
-  "https://999.md/ro/100444999",
-  "https://999.md/ro/89471949",
-  "https://999.md/ro/104866110",
-  "https://999.md/ro/104800539",
-  "https://999.md/ro/105043852",
-  "https://999.md/ro/104139559",
-  "https://999.md/ro/105062265",
-  "https://999.md/ro/105041390",
-  "https://999.md/ro/104987542",
-  "https://999.md/ro/103318263",
-  "https://999.md/ro/105047985",
-  "https://999.md/ro/80882493",
-  "https://999.md/ro/105046974",
-  "https://999.md/ro/103572646",
-  "https://999.md/ro/103234643",
-  "https://999.md/ro/105002331",
-  "https://999.md/ro/105041334",
-  "https://999.md/ro/105048057",
-  "https://999.md/ro/104553962",
-  "https://999.md/ro/105048065",
-  "https://999.md/ro/104985584",
-  "https://999.md/ro/104362510",
-  "https://999.md/ro/105045547",
-  "https://999.md/ro/104971829",
-  "https://999.md/ro/105044421",
-  "https://999.md/ro/105047652",
-  "https://999.md/ro/105048111",
-  "https://999.md/ro/103983110",
-  "https://999.md/ro/104961948",
-  "https://999.md/ro/105043504",
-  "https://999.md/ro/104587956",
-  "https://999.md/ro/105047606",
-  "https://999.md/ro/105043802",
-  "https://999.md/ro/103773937",
-  "https://999.md/ro/80839620",
-  "https://999.md/ro/101681373",
-  "https://999.md/ro/105041291",
-  "https://999.md/ro/104834727",
-  "https://999.md/ro/105045363",
-  "https://999.md/ro/104266097",
-  "https://999.md/ro/105022698",
-  "https://999.md/ro/104918687",
-  "https://999.md/ro/105025752",
-  "https://999.md/ro/104621216",
-  "https://999.md/ro/104896185",
-  "https://999.md/ro/104928559",
-  "https://999.md/ro/104694963",
-  "https://999.md/ro/105040426",
-  "https://999.md/ro/104801738",
-  "https://999.md/ro/104756706",
-  "https://999.md/ro/101794926",
-  "https://999.md/ro/102774741",
-  "https://999.md/ro/101794818",
-  "https://999.md/ro/101665552",
-  "https://999.md/ro/78666123",
-  "https://999.md/ro/103901593",
-  "https://999.md/ro/105017566",
-  "https://999.md/ro/104562063",
-  "https://999.md/ro/104933850",
-  "https://999.md/ro/104701231",
-  "https://999.md/ro/104805015",
-  "https://999.md/ro/105050369",
-  "https://999.md/ro/104558750",
-  "https://999.md/ro/105012709",
-  "https://999.md/ro/104587485",
-  "https://999.md/ro/105048913",
-  "https://999.md/ro/103358652",
-  "https://999.md/ro/84461941",
-  "https://999.md/ro/105054204",
-  "https://999.md/ro/105042805",
-  "https://999.md/ro/104322270",
-  "https://999.md/ro/103829548",
-  "https://999.md/ro/104690157",
-  "https://999.md/ro/104991989",
-  "https://999.md/ro/104991956",
-  "https://999.md/ro/104590779",
-  "https://999.md/ro/103323206",
-  "https://999.md/ro/105053792",
-  "https://999.md/ro/105067930",
-  "https://999.md/ro/103455604",
-  "https://999.md/ro/89832857",
-  "https://999.md/ro/103245798",
-  "https://999.md/ro/104207916",
-  "https://999.md/ro/104835809",
-  "https://999.md/ro/102831391",
-];
-
+let listings: (Listing | undefined)[] = [];
 async function run() {
   for (const link of links) {
     try {
-      console.log(await scrape(link));
+      const list: Listing | undefined = await scrape(link);
+      if (list) {
+        listings.push(list);
+      }
+      console.log(`O mers: ${link}`);
     } catch (error: any) {
       console.log(`Eroare la ${link} deoarece ${error}`);
     }
   }
 }
-run();
+await run();
+console.log(listings);
+await writeFile("listings.json", JSON.stringify(listings, null, 2));

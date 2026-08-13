@@ -1,25 +1,20 @@
 import type { Listing } from "../types/listing.js";
+import { userAgents } from "./userAgents.js";
 
-const sectoare = [
-  "Botanica",
-  "Buiucani",
-  "Centru",
-  "Ciocana",
-  "Râșcani",
-  "Rîșcani",
-  "Riscani",
-  "Poșta Veche",
-  "Posta Veche",
-];
-const camere = ["1", "2", "3", "4"];
+const randomUA =
+  userAgents[Math.floor(Math.random() * userAgents.length)] ?? userAgents[0]!;
 
-function extrageSector(str: string): string | null {
-  const pattern = new RegExp(`\\b(${sectoare.join("|")})\\b`, "i");
-  const match = str.match(pattern);
-
-  return match ? match[0] : null;
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
-function extrageCamere(str: string): string | null {
+
+function randomDelay(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+const camere = ["1", "2", "3", "4", "5", "O"];
+
+function extractRoom(str: string): string | null {
   const pattern = new RegExp(`\\b(${camere.join("|")})\\b`, "i");
   const match = str.match(pattern);
 
@@ -27,7 +22,9 @@ function extrageCamere(str: string): string | null {
 }
 
 export async function scrape(link: string) {
-  const response = await fetch(link);
+  const response = await fetch(link, {
+    headers: { "User-Agent": randomUA },
+  });
   const html = await response.text();
 
   const startJSON = html.indexOf("adView");
@@ -60,23 +57,27 @@ export async function scrape(link: string) {
   const surface = caracteristici.controls.find(
     (c: any) => c.title === "Suprafață totală",
   );
+  const m2 = surface.feature.value.value;
   const floor = caracteristici.controls.find((c: any) => c.title === "Etaj");
   const rooms = caracteristici.controls.find(
     (c: any) => c.title === "Număr de camere",
   );
-  if (!surface || !floor || !rooms) {
+  if (!surface || !floor || !rooms || m2 < 10 || m2 > 500) {
     console.log("SKIP ANUNT");
     return;
   }
 
   const listing: Listing = {
+    id_extern: extras.id,
+    offer_type: extras.offerType.value.translated,
     title: extras.title,
     price: extras.price.value.value,
+    currency: extras.price.value.unit.replace("UNIT_", "") || null,
     zone: extras.district.value.translated,
-    m2: surface.feature.value.value,
-    rooms: extrageCamere(rooms.feature.value.translated),
+    m2: m2,
+    rooms: extractRoom(rooms.feature.value.translated),
     floor: floor.feature.value.translated,
-    id_extern: extras.id,
   };
+  await sleep(randomDelay(500, 1500));
   return listing;
 }
