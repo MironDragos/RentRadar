@@ -75,8 +75,8 @@ export async function scrape(link: string) {
     currency: extras.price.value.unit.replace("UNIT_", "") || null,
     zone: extras.district.value.translated,
     m2: m2,
-    rooms: extractRoom(rooms.feature.value.translated),
-    floor: floor.feature.value.translated,
+    rooms: Number(extractRoom(rooms.feature.value.translated)),
+    floor: Number(floor.feature.value.translated),
   };
   await sleep(randomDelay(500, 1500));
   return listing;

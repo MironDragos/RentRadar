@@ -1,10 +1,12 @@
 import { scrape } from "./scraper/scrape.js";
-import { links } from "../links.js";
 import type { Listing } from "./types/listing.js";
 import { writeFile } from "fs/promises";
+import { collectLinks } from "./scraper/collectLinks.js";
 
 let listings: (Listing | undefined)[] = [];
 async function run() {
+  const links: string[] = await collectLinks(1);
+
   for (const link of links) {
     try {
       const list: Listing | undefined = await scrape(link);

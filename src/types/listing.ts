@@ -6,6 +6,6 @@ export type Listing = {
   currency: string | null;
   zone: string;
   m2: number;
-  rooms: string | null;
+  rooms: number;
   floor: number;
 };
