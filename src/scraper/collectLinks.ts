@@ -45,7 +45,9 @@ export async function collectLinks(pages: number) {
       })) as string[];
 
       preTotalLinks.push(links);
-      console.log(`Am colectat cu succes ${links.length} linkuri`);
+      console.log(
+        `Am colectat cu succes ${links.length} linkuri. ${pages - i} ramase`,
+      );
     } catch (error: any) {
       console.log(`Eroare la pagina ${i + 1}: ${error.message}`);
       continue;

@@ -1,0 +1,1 @@
+ALTER TABLE listing ALTER COLUMN title TYPE TEXT

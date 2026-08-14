@@ -12,13 +12,20 @@ function randomDelay(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-const camere = ["1", "2", "3", "4", "5"];
+const rooms = ["1", "2", "3", "4", "5"];
+const offerType = ["Vând", "De închiriat lunar", "De închiriat pe zi"];
 
 function extractRoom(str: string): string | null {
-  const pattern = new RegExp(`\\b(${camere.join("|")})\\b`, "i");
+  const pattern = new RegExp(`\\b(${rooms.join("|")})\\b`, "i");
   let match = str.match(pattern);
 
   return match ? match[0] : "0";
+}
+function extractOfferType(str: string): string | null {
+  const pattern = new RegExp(`\\b(${offerType.join("|")})\\b`, "i");
+  let match = str.match(pattern);
+
+  return match ? match[0] : null;
 }
 function extractFloor(str: string): string {
   const match = str.match(/\d+/);
@@ -80,7 +87,7 @@ export async function scrape(link: string) {
 
   const listing: Listing = {
     id_extern: extras.id,
-    offer_type: extras.offerType.value.translated,
+    offer_type: extractOfferType(extras.offerType.value.translated),
     title: extras.title,
     price: extras.price.value.value,
     currency: extras.price.value.unit.replace("UNIT_", "") || null,
