@@ -2,6 +2,7 @@ import { scrape } from "./scraper/scrape.js";
 import type { Listing } from "./types/listing.js";
 import { collectLinks } from "./scraper/collectLinks.js";
 import { saveListing } from "./services/serviceListings.js";
+import cron from "node-cron";
 
 async function run() {
   const links: string[] = await collectLinks(350);
@@ -15,7 +16,7 @@ async function run() {
         scrape(links[i + 2]),
       ]);
 
-      if (list[0] && list[1]) {
+      if (list[0] && list[1] && list[2]) {
         await saveListing(list[0]);
         await saveListing(list[1]);
         await saveListing(list[2]);
@@ -32,4 +33,6 @@ async function run() {
     }
   }
 }
-await run();
+cron.schedule("0 3 * * *", async () => {
+  await run();
+});
