@@ -4,7 +4,7 @@ import { collectLinks } from "./scraper/collectLinks.js";
 import { saveListing } from "./services/serviceListings.js";
 
 async function run() {
-  const links: string[] = await collectLinks(50);
+  const links: string[] = await collectLinks(340);
   var total_links = links.length;
   for (var i = 0; i < links.length; i += 3) {
     total_links -= 3;
