@@ -13,7 +13,7 @@ function simultanios(startIndex: number, count: number, links: string[]) {
 async function run() {
   const links: string[] = await collectLinks();
   var total_links = links.length;
-  const N = 3;
+  const N = 5;
   for (var i = 0; i < links.length; i += N) {
     total_links -= N;
     try {
