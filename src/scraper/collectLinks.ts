@@ -20,23 +20,22 @@ export async function collectLinks() {
 
   let preTotalLinks: string[][] = [];
 
-  for (var i = 0; i < pages; i++) {
+  for (var i = 344; i < pages; i++) {
     try {
       await page.goto(
         `https://999.md/ro/list/real-estate/apartments-and-rooms?page=${i + 1}`,
       );
-      const isEmpty = await page.evaluate(() => {
-        return document.body.innerText.includes("Lista de anunțuri este goală");
-      });
-      if (isEmpty) {
-        break;
-      }
       await page.waitForSelector("a h4");
 
       const links = (await page.evaluate(() => {
+        const container = document.querySelector(
+          '[data-testid="infinite-ads-list"]',
+        );
+        if (!container) {
+          return [];
+        }
         const ads = new Set();
-
-        document.querySelectorAll("a").forEach((a) => {
+        container.querySelectorAll("a").forEach((a) => {
           const href = a.getAttribute("href");
 
           if (href && href.startsWith("/ro/")) {
@@ -47,9 +46,11 @@ export async function collectLinks() {
             }
           }
         });
-
         return Array.from(ads);
       })) as string[];
+      if (links.length === 0) {
+        break;
+      }
       preTotalLinks.push(links);
       console.log(
         `Am colectat cu succes ${links.length} linkuri. Am colectat pana acum: ${i} de pagini`,
