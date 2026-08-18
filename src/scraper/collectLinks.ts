@@ -10,7 +10,8 @@ function randomDelay(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-export async function collectLinks(pages: number) {
+export async function collectLinks() {
+  const pages = 9999;
   const randomUA =
     userAgents[Math.floor(Math.random() * userAgents.length)] ?? userAgents[0]!;
 
@@ -24,6 +25,12 @@ export async function collectLinks(pages: number) {
       await page.goto(
         `https://999.md/ro/list/real-estate/apartments-and-rooms?page=${i + 1}`,
       );
+      const isEmpty = await page.evaluate(() => {
+        return document.body.innerText.includes("Lista de anunțuri este goală");
+      });
+      if (isEmpty) {
+        break;
+      }
       await page.waitForSelector("a h4");
 
       const links = (await page.evaluate(() => {
@@ -43,10 +50,9 @@ export async function collectLinks(pages: number) {
 
         return Array.from(ads);
       })) as string[];
-
       preTotalLinks.push(links);
       console.log(
-        `Am colectat cu succes ${links.length} linkuri. ${pages - i} ramase`,
+        `Am colectat cu succes ${links.length} linkuri. Am colectat pana acum: ${i} de pagini`,
       );
     } catch (error: any) {
       console.log(`Eroare la pagina ${i + 1}: ${error.message}`);
