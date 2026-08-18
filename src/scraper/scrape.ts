@@ -80,6 +80,12 @@ export async function scrape(link: string) {
   const rooms = caracteristici.controls.find(
     (c: any) => c.title === "Număr de camere",
   );
+  let zone;
+  if (extras.city.value.translated === "Chișinău") {
+    zone = extras.district.value.translated;
+  } else {
+    zone = extras.city.value.translated;
+  }
   if (!surface || !floor || !rooms || m2 < 10 || m2 > 500) {
     console.log("SKIP ANUNT");
     return;
@@ -91,7 +97,7 @@ export async function scrape(link: string) {
     title: extras.title,
     price: extras.price.value.value,
     currency: extras.price.value.unit.replace("UNIT_", "") || null,
-    zone: extras.district.value.translated,
+    zone: zone,
     m2: m2,
     rooms: Number(extractRoom(rooms.feature.value.translated)),
     floor: Number(extractFloor(floor.feature.value.translated)),
