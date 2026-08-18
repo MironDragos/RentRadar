@@ -20,7 +20,7 @@ export async function collectLinks() {
 
   let preTotalLinks: string[][] = [];
 
-  for (var i = 344; i < pages; i++) {
+  for (var i = 0; i < pages; i++) {
     try {
       await page.goto(
         `https://999.md/ro/list/real-estate/apartments-and-rooms?page=${i + 1}`,
