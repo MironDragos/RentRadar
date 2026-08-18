@@ -3,26 +3,28 @@ import type { Listing } from "./types/listing.js";
 import { collectLinks } from "./scraper/collectLinks.js";
 import { saveListing } from "./services/serviceListings.js";
 
+function simultanios(startIndex: number, count: number, links: string[]) {
+  var list = [];
+  for (var i = startIndex; i < startIndex + count; i++) {
+    list.push(scrape(links[i]));
+  }
+  return list;
+}
 async function run() {
   const links: string[] = await collectLinks(340);
   var total_links = links.length;
-  for (var i = 0; i < links.length; i += 3) {
-    total_links -= 3;
+  const N = 3;
+  for (var i = 0; i < links.length; i += N) {
+    total_links -= N;
     try {
-      const list: Listing[] = await Promise.all([
-        scrape(links[i]),
-        scrape(links[i + 1]),
-        scrape(links[i + 2]),
-      ]);
+      const list: Listing[] = await Promise.all(simultanios(i, N, links));
 
-      if (list[0] && list[1] && list[2]) {
-        await saveListing(list[0]);
-        await saveListing(list[1]);
-        await saveListing(list[2]);
+      if (list.length === N && list.every((l) => l !== undefined)) {
+        for (const l of list) {
+          await saveListing(l);
+        }
       }
-      console.log(
-        `It worked for: ${links[i]}, ${links[i + 1]}, ${links[i + 2]}. ${total_links} left`,
-      );
+      console.log(`It worked for a batch of ${N}. ${total_links} left`);
     } catch (error: any) {
       if (error.message === "RATE_LIMITED") {
         console.log("RATE LIMIT detected — stoped the proccess.");
