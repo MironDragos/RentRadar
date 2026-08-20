@@ -1,36 +1,42 @@
 import type { Metadata } from "next";
-import { Unbounded, Manrope, JetBrains_Mono } from "next/font/google";
+import { Big_Shoulders_Stencil, PT_Sans, Martian_Mono } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import Navbar from "./components/navbar";
+import Footer from "./components/footer";
 
-const unbounded = Unbounded({
+const display = Big_Shoulders_Stencil({
   subsets: ["latin"],
   weight: ["700", "900"],
   variable: "--font-display",
 });
 
-const manrope = Manrope({
+const body = PT_Sans({
   subsets: ["latin"],
-  weight: ["400", "500", "700"],
+  weight: ["400", "700"],
   variable: "--font-body",
 });
 
-const jetbrainsMono = JetBrains_Mono({
+const mono = Martian_Mono({
   subsets: ["latin"],
-  weight: ["400", "500", "700"],
   variable: "--font-mono",
 });
 
 export const metadata: Metadata = {
-  title: "RentRadar",
-  description: "Tracker de prețuri imobiliare — piața din Moldova",
+  title: "RentRadar — chirii Chișinău, urmărite zilnic",
+  description:
+    "Evoluția prețurilor la chirie în Chișinău, culeasă zilnic de pe 999.md.",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="ro">
-      <body className={`${unbounded.variable} ${manrope.variable} ${jetbrainsMono.variable} font-body bg-panel-bg text-panel-text`}>
+      <body
+        className={`${display.variable} ${body.variable} ${mono.variable} antialiased`}
+      >
         <Navbar />
         {children}
         <Footer />
