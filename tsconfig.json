@@ -40,6 +40,7 @@
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
-    "allowJs": true,
-  }
+        "allowJs": true,
+  },
+  "exclude": ["frontend", "node_modules", "dist"]
 }
