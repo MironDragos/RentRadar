@@ -4,13 +4,13 @@
   --color-bg: #1C1E1B;
   --color-panel: #2A2D28;
   --color-text: #EDEAE0;
-  --color-accent: #FF6A3D;
+  --color-accent: #D4A017;
   --color-accent-alt: #6FBF73;
   --color-line: #45483F;
 
   --font-display: "Big Shoulders Stencil", sans-serif;
-  --font-body: "PT Sans", sans-serif;
-  --font-mono: "Martian Mono", monospace;
+  --font-body: "Golos Text", sans-serif;
+  --font-mono: "PT Mono", monospace;
 
   --radius-none: 0px;
 }

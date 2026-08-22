@@ -27,6 +27,11 @@ const DEALS = [
 ];
 
 export default function Home() {
+  async function getData() {
+    const res = await fetch("http://localhost:3001/stats");
+    console.log(await res.json());
+  }
+  getData();
   return (
     <main className="mx-auto max-w-6xl px-6">
       {/* HERO — grid asimetric de "ferestre" */}

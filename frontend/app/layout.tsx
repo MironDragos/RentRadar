@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Big_Shoulders_Stencil, PT_Sans, Martian_Mono } from "next/font/google";
+import { Big_Shoulders_Stencil, Golos_Text, PT_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/navbar";
 import Footer from "./components/footer";
@@ -10,14 +10,15 @@ const display = Big_Shoulders_Stencil({
   variable: "--font-display",
 });
 
-const body = PT_Sans({
+const body = Golos_Text({
   subsets: ["latin"],
   weight: ["400", "700"],
   variable: "--font-body",
 });
 
-const mono = Martian_Mono({
+const mono = PT_Mono({
   subsets: ["latin"],
+  weight: ["400"],
   variable: "--font-mono",
 });
 
