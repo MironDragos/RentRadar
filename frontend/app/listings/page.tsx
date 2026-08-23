@@ -1,44 +1,37 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { Listing } from "../../../src/types/listing";
 
-type Listing = {
-  id: string;
-  title: string;
-  sector: string;
-  rooms: number;
-  area: number;
-  price: number;
-};
-
-// TODO: înlocuiește cu fetch către Express /listings (cu query params pentru filtre/paginare)
-const MOCK_LISTINGS: Listing[] = Array.from({ length: 42 }).map((_, i) => {
-  const sectors = ["Centru", "Botanica", "Buiucani", "Rîșcani", "Ciocana", "Telecentru"];
-  const sector = sectors[i % sectors.length];
-  const rooms = (i % 3) + 1;
-  const area = 25 + rooms * 18 + (i % 5) * 3;
-  const price = Math.round(area * (5 + (i % 4)));
-  return {
-    id: `${i + 1}`,
-    title: `${rooms} camer${rooms === 1 ? "ă" : "e"}, ${sector}`,
-    sector,
-    rooms,
-    area,
-    price,
-  };
-});
-
-const SECTORS = ["Toate", "Centru", "Botanica", "Buiucani", "Rîșcani", "Ciocana", "Telecentru"];
+const SECTORS = [
+  "Toate",
+  "Centru",
+  "Botanica",
+  "Buiucani",
+  "Rîșcani",
+  "Ciocana",
+  "Telecentru",
+];
 const PAGE_SIZE = 12;
 
 export default function ListingsPage() {
+  const [listings, setListings] = useState<Listing[]>([]);
   const [sector, setSector] = useState("Toate");
   const [maxPrice, setMaxPrice] = useState(1000);
   const [page, setPage] = useState(1);
 
+  useEffect(() => {
+    async function getData() {
+      const res = await fetch("http://localhost:3001/listings");
+      const data = await res.json();
+      setListings(data);
+    }
+    getData();
+  }, []);
+
   const filtered = useMemo(() => {
-    return MOCK_LISTINGS.filter((l) => {
-      if (sector !== "Toate" && l.sector !== sector) return false;
+    return listings.filter((l) => {
+      if (sector !== "Toate" && l.zone !== sector) return false;
       if (l.price > maxPrice) return false;
       return true;
     });
@@ -118,14 +111,14 @@ export default function ListingsPage() {
 
         {paged.map((l, i) => (
           <div
-            key={l.id}
+            key={l.id_extern}
             className={`grid grid-cols-[1fr_auto_auto_auto] items-center gap-4 px-6 py-4 ${
               i !== 0 ? "border-t border-line" : ""
             }`}
           >
             <span className="font-body text-sm">{l.title}</span>
-            <span className="font-mono text-xs text-text/60">{l.sector}</span>
-            <span className="font-mono text-xs text-text/60">{l.area} m²</span>
+            <span className="font-mono text-xs text-text/60">{l.zone}</span>
+            <span className="font-mono text-xs text-text/60">{l.zone} m²</span>
             <span className="text-right font-mono text-lg">{l.price} €</span>
           </div>
         ))}

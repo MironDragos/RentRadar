@@ -1,12 +1,11 @@
 import PriceChartSection from "./components/PriceChartSection";
 
-// TODO: înlocuiește cu fetch către Express /stats
-const STATS = {
-  totalListings: 26140,
-  avgPrice: 412,
-  avgPricePerM2: 8.6,
-  updatedToday: 187,
-};
+async function getStats() {
+  const res = await fetch("http://localhost:3001/stats", {
+    cache: "no-store",
+  });
+  return res.json();
+}
 
 // TODO: înlocuiește cu fetch către Express /stats/history (sau echivalent)
 const HISTORY = [
@@ -26,12 +25,17 @@ const DEALS = [
   { title: "3 camere, Centru", price: 480, pricePerM2: 6.4, drop: -9 },
 ];
 
-export default function Home() {
-  async function getData() {
-    const res = await fetch("http://localhost:3001/stats");
-    console.log(await res.json());
-  }
-  getData();
+export default async function Home() {
+  const STATS = await getStats();
+
+  const totalListings = STATS.total[0]?.count ?? null;
+  const avgRent = STATS.avgPrice.find(
+    (r: { offer_type: string; avg: number }) => r.offer_type === "chirie",
+  )?.avg;
+  const avgSale = STATS.avgPrice.find(
+    (r: { offer_type: string; avg: number }) => r.offer_type === "vanzare",
+  )?.avg;
+
   return (
     <main className="mx-auto max-w-6xl px-6">
       {/* HERO — grid asimetric de "ferestre" */}
@@ -41,35 +45,35 @@ export default function Home() {
             999.md · urmărit zilnic
           </p>
           <h1 className="font-display text-5xl leading-[0.95] tracking-wide md:text-6xl">
-            PIAȚA DE
+            PIAȚA
             <br />
-            CHIRII DIN
+            IMOBILIARĂ
             <br />
             CHIȘINĂU.
           </h1>
           <p className="max-w-xs font-body text-sm text-text/70">
-            {STATS.totalListings.toLocaleString("ro-RO")} anunțuri urmărite,
-            actualizate în fiecare noapte. Fără estimări.
+            {totalListings
+              ? `${Number(totalListings).toLocaleString("ro-RO")} anunțuri urmărite`
+              : "Anunțuri urmărite"}
+            , actualizate în fiecare noapte. Fără estimări.
           </p>
         </div>
 
         <div className="grid grid-cols-2 gap-px bg-line">
           <StatWindow
             label="Anunțuri active"
-            value={STATS.totalListings.toLocaleString("ro-RO")}
+            value={totalListings ? Number(totalListings).toLocaleString("ro-RO") : "—"}
             lit
           />
-          <StatWindow label="Preț mediu" value={`${STATS.avgPrice} €`} />
           <StatWindow
-            label="Preț mediu / m²"
-            value={`${STATS.avgPricePerM2} €`}
+            label="Preț mediu — chirie"
+            value={avgRent ? `${Math.round(avgRent)} €` : "—"}
           />
           <StatWindow
-            label="Azi"
-            value={`+${STATS.updatedToday}`}
-            lit
-            accent="alt"
+            label="Preț mediu — vânzare"
+            value={avgSale ? `${Math.round(avgSale)} €` : "—"}
           />
+          <StatWindow label="Azi" value="Live" lit accent="alt" />
         </div>
       </section>
 
@@ -89,7 +93,9 @@ export default function Home() {
       {/* OFERTE BOMBĂ */}
       <section className="border border-t-0 border-line px-8 py-12">
         <div className="mb-8 flex items-baseline justify-between">
-          <h2 className="font-display text-2xl tracking-wide">OFERTE BOMBĂ</h2>
+          <h2 className="font-display text-2xl tracking-wide">
+            OFERTE BOMBĂ
+          </h2>
           <a
             href="/deals"
             className="font-mono text-xs uppercase tracking-widest text-accent hover:underline"
@@ -104,7 +110,9 @@ export default function Home() {
               <p className="font-mono text-xs uppercase tracking-widest text-accent">
                 {deal.drop}%
               </p>
-              <h3 className="mt-2 font-body text-lg font-bold">{deal.title}</h3>
+              <h3 className="mt-2 font-body text-lg font-bold">
+                {deal.title}
+              </h3>
               <p className="mt-4 font-mono text-2xl">{deal.price} €</p>
               <p className="font-mono text-xs text-text/50">
                 {deal.pricePerM2} €/m²
