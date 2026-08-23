@@ -14,7 +14,15 @@ function randomDelay(min: number, max: number) {
 
 const rooms = ["1", "2", "3", "4", "5"];
 const offerType = ["Vând", "De închiriat lunar", "De închiriat pe zi"];
-
+function extractPrice(currency: string, price: number) {
+  if (currency === "MDL") {
+    return price / 20;
+  } else if (currency === "USD") {
+    return price / 1.17;
+  } else {
+    return price;
+  }
+}
 function extractRoom(str: string): string | null {
   const pattern = new RegExp(`\\b(${rooms.join("|")})\\b`, "i");
   let match = str.match(pattern);
@@ -80,6 +88,10 @@ export async function scrape(link: string) {
   const rooms = caracteristici.controls.find(
     (c: any) => c.title === "Număr de camere",
   );
+  const price = extractPrice(
+    extras.price.value.unit.replace("UNIT_", "") || null,
+    extras.price.value.value,
+  );
   let zone;
   if (extras.city.value.translated === "Chișinău") {
     zone = extras.district.value.translated;
@@ -95,8 +107,7 @@ export async function scrape(link: string) {
     id_extern: extras.id,
     offer_type: extractOfferType(extras.offerType.value.translated),
     title: extras.title,
-    price: extras.price.value.value,
-    currency: extras.price.value.unit.replace("UNIT_", "") || null,
+    price: price,
     zone: zone,
     m2: m2,
     rooms: Number(extractRoom(rooms.feature.value.translated)),

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Listing } from "../../../src/types/listing";
 
 type OfferType = "chirie" | "vanzare";
@@ -14,6 +14,7 @@ const SECTORS = [
   "Ciocana",
   "Telecentru",
 ];
+
 const OFFER_TYPES: Array<{ label: string; value: OfferType | "toate" }> = [
   { label: "Toate", value: "toate" },
   { label: "Chirie", value: "chirie" },
@@ -23,31 +24,31 @@ const PAGE_SIZE = 12;
 
 export default function ListingsPage() {
   const [listings, setListings] = useState<Listing[]>([]);
+  const [total, setTotal] = useState(0);
   const [offerType, setOfferType] = useState<OfferType | "toate">("toate");
   const [sector, setSector] = useState("Toate");
   const [maxPrice, setMaxPrice] = useState(50000);
   const [page, setPage] = useState(1);
   const priceCeiling = offerType === "vanzare" ? 150000 : 1000;
+
   useEffect(() => {
     async function getData() {
-      const res = await fetch("http://localhost:3001/listings");
+      const params = new URLSearchParams();
+      params.set("page", String(page));
+      params.set("limit", String(PAGE_SIZE));
+      if (offerType !== "toate") params.set("offer_type", offerType);
+      if (sector !== "Toate") params.set("zone", sector);
+      params.set("maxPrice", String(maxPrice));
+
+      const res = await fetch(`http://localhost:3001/listings?${params}`);
       const data = await res.json();
-      setListings(data);
+      setListings(data.listing);
+      setTotal(Number(data.total[0].count));
     }
     getData();
-  }, []);
+  }, [page, offerType, sector, maxPrice]);
 
-  const filtered = useMemo(() => {
-    return listings.filter((l) => {
-      if (offerType !== "toate" && l.offer_type !== offerType) return false;
-      if (sector !== "Toate" && l.zone !== sector) return false;
-      if (l.price > maxPrice) return false;
-      return true;
-    });
-  }, [offerType, sector, maxPrice]);
-
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const paged = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   function updateOfferType(next: OfferType | "toate") {
     setOfferType(next);
@@ -69,7 +70,7 @@ export default function ListingsPage() {
     <main className="mx-auto max-w-6xl px-6 py-16">
       <div className="mb-10">
         <p className="font-mono text-xs uppercase tracking-widest text-accent">
-          {filtered.length.toLocaleString("ro-RO")} rezultate
+          {total.toLocaleString("ro-RO")} rezultate
         </p>
         <h1 className="mt-2 font-display text-4xl tracking-wide md:text-5xl">
           ANUNȚURI
@@ -144,7 +145,7 @@ export default function ListingsPage() {
           <span className="text-right">Preț</span>
         </div>
 
-        {paged.map((l, i) => (
+        {listings.map((l, i) => (
           <div
             key={l.id_extern}
             className={`grid grid-cols-[1fr_auto_auto_auto_auto] items-center gap-4 px-6 py-4 ${
@@ -163,7 +164,7 @@ export default function ListingsPage() {
           </div>
         ))}
 
-        {paged.length === 0 && (
+        {listings.length === 0 && (
           <div className="px-6 py-12 text-center font-body text-sm text-text/50">
             Niciun anunț nu corespunde filtrelor alese.
           </div>

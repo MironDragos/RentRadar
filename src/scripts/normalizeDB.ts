@@ -29,20 +29,12 @@ const ZONE_MAP: Record<string, string> = {
   "10 cartier": "Bălți",
   Bam: "Bălți",
   BAM: "Bălți",
-  Molodova: "Bălți",
-  Autogara: "Bălți",
-  "Gara de nord": "Bălți",
-  Paminteni: "Bălți",
-  "Podul Chișinăului": "Bălți",
   "Bălții Noi": "Bălți",
-  Periferie: "Bălți",
-  Tineret: "Bălți",
-  Balca: "Bălți",
-  Steluța: "Bălți",
-  Dănuțeni: "Bălți",
 };
 
 const OFFICIAL_ZONES = [
+  "Tiraspol",
+  "Bender",
   "Centru",
   "Botanica",
   "Buiucani",

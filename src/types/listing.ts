@@ -3,7 +3,6 @@ export type Listing = {
   offer_type: string;
   title: string;
   price: number;
-  currency: string | null;
   zone: string;
   m2: number;
   rooms: number;
