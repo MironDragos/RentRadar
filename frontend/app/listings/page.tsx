@@ -1,42 +1,19 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
+import { Listing } from "../../../src/types/listing";
 
 type OfferType = "chirie" | "vanzare";
 
-type Listing = {
-  id: string;
-  title: string;
-  sector: string;
-  offerType: OfferType;
-  rooms: number;
-  area: number;
-  price: number;
-};
-
-// TODO: înlocuiește cu fetch către Express /listings (cu query params pentru filtre/paginare)
-const MOCK_LISTINGS: Listing[] = Array.from({ length: 48 }).map((_, i) => {
-  const sectors = ["Centru", "Botanica", "Buiucani", "Rîșcani", "Ciocana", "Telecentru"];
-  const sector = sectors[i % sectors.length];
-  const offerType: OfferType = i % 2 === 0 ? "chirie" : "vanzare";
-  const rooms = (i % 3) + 1;
-  const area = 25 + rooms * 18 + (i % 5) * 3;
-  const price =
-    offerType === "chirie"
-      ? Math.round(area * (5 + (i % 4)))
-      : Math.round(area * (900 + (i % 5) * 120));
-  return {
-    id: `${i + 1}`,
-    title: `${rooms} camer${rooms === 1 ? "ă" : "e"}, ${sector}`,
-    sector,
-    offerType,
-    rooms,
-    area,
-    price,
-  };
-});
-
-const SECTORS = ["Toate", "Centru", "Botanica", "Buiucani", "Rîșcani", "Ciocana", "Telecentru"];
+const SECTORS = [
+  "Toate",
+  "Centru",
+  "Botanica",
+  "Buiucani",
+  "Rîșcani",
+  "Ciocana",
+  "Telecentru",
+];
 const OFFER_TYPES: Array<{ label: string; value: OfferType | "toate" }> = [
   { label: "Toate", value: "toate" },
   { label: "Chirie", value: "chirie" },
@@ -45,17 +22,25 @@ const OFFER_TYPES: Array<{ label: string; value: OfferType | "toate" }> = [
 const PAGE_SIZE = 12;
 
 export default function ListingsPage() {
+  const [listings, setListings] = useState<Listing[]>([]);
   const [offerType, setOfferType] = useState<OfferType | "toate">("toate");
   const [sector, setSector] = useState("Toate");
   const [maxPrice, setMaxPrice] = useState(50000);
   const [page, setPage] = useState(1);
-
   const priceCeiling = offerType === "vanzare" ? 150000 : 1000;
+  useEffect(() => {
+    async function getData() {
+      const res = await fetch("http://localhost:3001/listings");
+      const data = await res.json();
+      setListings(data);
+    }
+    getData();
+  }, []);
 
   const filtered = useMemo(() => {
-    return MOCK_LISTINGS.filter((l) => {
-      if (offerType !== "toate" && l.offerType !== offerType) return false;
-      if (sector !== "Toate" && l.sector !== sector) return false;
+    return listings.filter((l) => {
+      if (offerType !== "toate" && l.offer_type !== offerType) return false;
+      if (sector !== "Toate" && l.zone !== sector) return false;
       if (l.price > maxPrice) return false;
       return true;
     });
@@ -91,7 +76,6 @@ export default function ListingsPage() {
         </h1>
       </div>
 
-      {/* FILTRE */}
       <div className="mb-8 flex flex-wrap items-end gap-8 border border-line bg-panel p-6">
         <div className="flex flex-col gap-2">
           <span className="font-mono text-[11px] uppercase tracking-widest text-text/50">
@@ -151,7 +135,6 @@ export default function ListingsPage() {
         </div>
       </div>
 
-      {/* TABEL */}
       <div className="border border-line">
         <div className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-4 border-b border-line px-6 py-3 font-mono text-[11px] uppercase tracking-widest text-text/50">
           <span>Anunț</span>
@@ -163,17 +146,17 @@ export default function ListingsPage() {
 
         {paged.map((l, i) => (
           <div
-            key={l.id}
+            key={l.id_extern}
             className={`grid grid-cols-[1fr_auto_auto_auto_auto] items-center gap-4 px-6 py-4 ${
               i !== 0 ? "border-t border-line" : ""
             }`}
           >
             <span className="font-body text-sm">{l.title}</span>
             <span className="font-mono text-xs uppercase tracking-widest text-text/60">
-              {l.offerType === "chirie" ? "chirie" : "vânzare"}
+              {l.offer_type === "chirie" ? "chirie" : "vânzare"}
             </span>
-            <span className="font-mono text-xs text-text/60">{l.sector}</span>
-            <span className="font-mono text-xs text-text/60">{l.area} m²</span>
+            <span className="font-mono text-xs text-text/60">{l.zone}</span>
+            <span className="font-mono text-xs text-text/60">{l.m2} m²</span>
             <span className="text-right font-mono text-lg">
               {l.price.toLocaleString("ro-RO")} €
             </span>
@@ -187,7 +170,6 @@ export default function ListingsPage() {
         )}
       </div>
 
-      {/* PAGINARE */}
       {totalPages > 1 && (
         <div className="mt-6 flex items-center justify-between font-mono text-xs uppercase tracking-widest">
           <button
