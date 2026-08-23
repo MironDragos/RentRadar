@@ -3,10 +3,10 @@ import PriceChartSection from "../components/PriceChartSection";
 // TODO: înlocuiește cu fetch către Express /stats
 const OVERVIEW = {
   totalListings: 26140,
-  avgPrice: 412,
-  avgPricePerM2: 8.6,
-  activeToday: 187,
-  medianPrice: 380,
+  totalChirie: 15820,
+  totalVanzare: 10320,
+  avgPriceChirie: 412,
+  avgPriceVanzare: 42500,
   avgArea: 52,
 };
 
@@ -21,18 +21,19 @@ const HISTORY = [
   { label: "Dum", value: 412 },
 ];
 
-// TODO: înlocuiește cu fetch către Express /stats/by-sector (GROUP BY sector)
+// TODO: înlocuiește cu fetch către Express /stats/by-sector (GROUP BY sector, offer_type)
 const BY_SECTOR = [
-  { sector: "Centru", avgPrice: 520, count: 3120 },
-  { sector: "Botanica", avgPrice: 390, count: 5840 },
-  { sector: "Buiucani", avgPrice: 410, count: 4210 },
-  { sector: "Rîșcani", avgPrice: 375, count: 4890 },
-  { sector: "Ciocana", avgPrice: 340, count: 3960 },
-  { sector: "Telecentru", avgPrice: 395, count: 2100 },
+  { sector: "Centru", avgChirie: 520, avgVanzare: 62000 },
+  { sector: "Botanica", avgChirie: 390, avgVanzare: 44000 },
+  { sector: "Buiucani", avgChirie: 410, avgVanzare: 47000 },
+  { sector: "Rîșcani", avgChirie: 375, avgVanzare: 41000 },
+  { sector: "Ciocana", avgChirie: 340, avgVanzare: 36500 },
+  { sector: "Telecentru", avgChirie: 395, avgVanzare: 43000 },
 ];
 
 export default function StatsPage() {
-  const maxSectorPrice = Math.max(...BY_SECTOR.map((s) => s.avgPrice));
+  const maxChirie = Math.max(...BY_SECTOR.map((s) => s.avgChirie));
+  const maxVanzare = Math.max(...BY_SECTOR.map((s) => s.avgVanzare));
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-16">
@@ -43,58 +44,97 @@ export default function StatsPage() {
         <h1 className="mt-2 font-display text-4xl tracking-wide md:text-5xl">
           STATISTICI
         </h1>
+        <p className="mt-3 max-w-md font-body text-sm text-text/70">
+          Piața imobiliară din Chișinău — chirii și vânzări, urmărite zilnic.
+        </p>
       </div>
 
       {/* GRID GENERAL — 6 ferestre */}
       <div className="grid grid-cols-2 gap-px border border-line bg-line md:grid-cols-3">
-        <StatWindow label="Anunțuri active" value={OVERVIEW.totalListings.toLocaleString("ro-RO")} lit />
-        <StatWindow label="Preț mediu" value={`${OVERVIEW.avgPrice} €`} />
-        <StatWindow label="Preț median" value={`${OVERVIEW.medianPrice} €`} />
-        <StatWindow label="Preț mediu / m²" value={`${OVERVIEW.avgPricePerM2} €`} />
+        <StatWindow
+          label="Anunțuri active"
+          value={OVERVIEW.totalListings.toLocaleString("ro-RO")}
+          lit
+        />
+        <StatWindow
+          label="Anunțuri chirie"
+          value={OVERVIEW.totalChirie.toLocaleString("ro-RO")}
+        />
+        <StatWindow
+          label="Anunțuri vânzare"
+          value={OVERVIEW.totalVanzare.toLocaleString("ro-RO")}
+        />
+        <StatWindow
+          label="Preț mediu chirie"
+          value={`${OVERVIEW.avgPriceChirie} €`}
+          lit
+          accent="alt"
+        />
+        <StatWindow
+          label="Preț mediu vânzare"
+          value={`${OVERVIEW.avgPriceVanzare.toLocaleString("ro-RO")} €`}
+          lit
+          accent="alt"
+        />
         <StatWindow label="Suprafață medie" value={`${OVERVIEW.avgArea} m²`} />
-        <StatWindow label="Azi" value={`+${OVERVIEW.activeToday}`} lit accent="alt" />
       </div>
 
       {/* GRAFIC EVOLUȚIE */}
       <div className="mt-16">
         <h2 className="mb-8 font-display text-2xl tracking-wide">
-          EVOLUȚIA PREȚULUI MEDIU
+          EVOLUȚIA PREȚULUI MEDIU LA CHIRIE
         </h2>
         <PriceChartSection data={HISTORY} />
       </div>
 
-      {/* PE SECTOARE */}
+      {/* PE SECTOARE — chirie + vânzare una lângă alta */}
       <div className="mt-16">
         <h2 className="mb-8 font-display text-2xl tracking-wide">
           PREȚ MEDIU PE SECTOR
         </h2>
         <div className="border border-line">
-          {BY_SECTOR.sort((a, b) => b.avgPrice - a.avgPrice).map((s, i) => (
-            <div
-              key={s.sector}
-              className={`flex items-center gap-4 px-6 py-4 ${
-                i !== 0 ? "border-t border-line" : ""
-              }`}
-            >
-              <span className="w-28 shrink-0 font-body text-sm">
-                {s.sector}
-              </span>
-              <div className="h-4 flex-1 bg-bg">
-                <div
-                  className="h-full bg-accent"
-                  style={{
-                    width: `${(s.avgPrice / maxSectorPrice) * 100}%`,
-                  }}
-                />
+          <div className="grid grid-cols-[1fr_auto] gap-4 border-b border-line px-6 py-3 font-mono text-[11px] uppercase tracking-widest text-text/50">
+            <span>Sector</span>
+            <span>Chirie · Vânzare</span>
+          </div>
+          {BY_SECTOR.sort((a, b) => b.avgVanzare - a.avgVanzare).map(
+            (s, i) => (
+              <div
+                key={s.sector}
+                className={`grid grid-cols-[1fr_auto] items-center gap-4 px-6 py-4 ${
+                  i !== 0 ? "border-t border-line" : ""
+                }`}
+              >
+                <div>
+                  <span className="font-body text-sm">{s.sector}</span>
+                  <div className="mt-2 flex flex-col gap-1">
+                    <div className="h-2 bg-bg">
+                      <div
+                        className="h-full bg-accent-alt"
+                        style={{
+                          width: `${(s.avgChirie / maxChirie) * 100}%`,
+                        }}
+                      />
+                    </div>
+                    <div className="h-2 bg-bg">
+                      <div
+                        className="h-full bg-accent"
+                        style={{
+                          width: `${(s.avgVanzare / maxVanzare) * 100}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="text-right font-mono text-sm">
+                  <p className="text-accent-alt">{s.avgChirie} €</p>
+                  <p className="text-accent">
+                    {s.avgVanzare.toLocaleString("ro-RO")} €
+                  </p>
+                </div>
               </div>
-              <span className="w-16 shrink-0 text-right font-mono text-sm">
-                {s.avgPrice} €
-              </span>
-              <span className="w-20 shrink-0 text-right font-mono text-xs text-text/40">
-                {s.count.toLocaleString("ro-RO")} anunțuri
-              </span>
-            </div>
-          ))}
+            ),
+          )}
         </div>
       </div>
     </main>
