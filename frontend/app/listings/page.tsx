@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { Listing } from "../../../src/types/listing";
 
-type OfferType = "chirie" | "vanzare";
 
 const SECTORS = [
   "Toate",
@@ -15,28 +14,29 @@ const SECTORS = [
   "Telecentru",
 ];
 
-const OFFER_TYPES: Array<{ label: string; value: OfferType | "toate" }> = [
-  { label: "Toate", value: "toate" },
-  { label: "Chirie", value: "chirie" },
-  { label: "Vânzare", value: "vanzare" },
+const OFFER_TYPES: Array<{ label: string; value: string | "Toate" }> = [
+  { label: "Toate", value: "Toate" },
+  { label: "Vânzare", value: "Vând" },
+  { label: "Chirie lunară", value: "De închiriat lunar" },
+  { label: "Chirie zilnică", value: "De închiriat pe zi" },
 ];
 const PAGE_SIZE = 12;
 
 export default function ListingsPage() {
   const [listings, setListings] = useState<Listing[]>([]);
   const [total, setTotal] = useState(0);
-  const [offerType, setOfferType] = useState<OfferType | "toate">("toate");
+  const [offerType, setOfferType] = useState<string | "Toate">("Toate");
   const [sector, setSector] = useState("Toate");
-  const [maxPrice, setMaxPrice] = useState(50000);
+  const [maxPrice, setMaxPrice] = useState(500000);
   const [page, setPage] = useState(1);
-  const priceCeiling = offerType === "vanzare" ? 150000 : 1000;
+  const priceCeiling = offerType === "Vând" || offerType==="Toate"? 500000 : offerType === "De închiriat lunar" ? 5000 : 2000
 
   useEffect(() => {
     async function getData() {
       const params = new URLSearchParams();
       params.set("page", String(page));
       params.set("limit", String(PAGE_SIZE));
-      if (offerType !== "toate") params.set("offer_type", offerType);
+      if (offerType !== "Toate") params.set("offer_type", offerType);
       if (sector !== "Toate") params.set("zone", sector);
       params.set("maxPrice", String(maxPrice));
 
@@ -50,9 +50,9 @@ export default function ListingsPage() {
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
-  function updateOfferType(next: OfferType | "toate") {
+  function updateOfferType(next: string | "Toate") {
     setOfferType(next);
-    setMaxPrice(next === "vanzare" ? 150000 : 1000);
+    setMaxPrice(next === "Vând" || next === "Toate"? 500000 : next === "De închiriat lunar" ? 5000 : 2000);
     setPage(1);
   }
 

@@ -1,5 +1,8 @@
 import type { Listing } from "../types/listing.js";
-import { findByExternalId } from "../repositories/repositoryListings.js";
+import {
+  findByExternalId,
+  updateListingData,
+} from "../repositories/repositoryListings.js";
 import { insertListing } from "../repositories/repositoryListings.js";
 import { updatePrice } from "../repositories/repositoryListings.js";
 import { updateLastCheck } from "../repositories/repositoryListings.js";
@@ -13,12 +16,14 @@ export async function saveListing(listing: Listing) {
     console.log("was insereted");
   } else if (old_listing.price != listing.price) {
     await updatePrice(listing.price, listing.id_extern);
+    await updateListingData(listing);
     await DB.query(
       "INSERT INTO price_history (property_id, old_price, new_price) VALUES (($1),($2),($3))",
       [old_listing.id, old_listing.price, listing.price],
     );
     console.log("price changed");
   } else {
+    await updateListingData(listing);
     console.log("last check changed");
     await updateLastCheck(listing.id_extern);
   }

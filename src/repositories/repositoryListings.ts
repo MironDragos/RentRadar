@@ -1,7 +1,13 @@
 import { DB } from "../db/db.js";
 import type { Listing } from "../types/listing.js";
-// findByExternalId(), insertListing(), updatePrice(), updateLastCheck()
 
+export async function updateListingData(listing: Listing) {
+  const rezultat = await DB.query(
+    "UPDATE listing SET zone = ($1), title = ($2), m2 = ($3), rooms = ($4), floor = ($5) WHERE id_extern = ($6)",
+    [listing.zone, listing.title, listing.m2, listing.rooms, listing.floor, listing.id_extern],
+  );
+  return rezultat.rowCount;
+}
 export async function findByExternalId(id: string) {
   const rezultat = await DB.query(
     "SELECT * FROM listing WHERE id_extern = ($1)",
