@@ -66,18 +66,31 @@ app.get("/listings/:id/price_history", async (req, res) => {
 });
 app.get("/stats", async (req, res) => {
   try {
-    const total = await DB.query("SELECT COUNT(*) FROM listing");
-    const avarage = await DB.query(
-      "SELECT offer_type,AVG(price) FROM listing GROUP BY offer_type",
+    const totalListings = await DB.query("SELECT COUNT(*) FROM listing");
+    const totalChirie = await DB.query(
+      "SELECT COUNT(*) FROM listing WHERE offer_type IN ('De închiriat lunar', 'De închiriat pe zi');",
     );
-    const avaragem2 = await DB.query(
-      "SELECT offer_type,AVG(price)/AVG(m2) as price_for_m2 FROM listing GROUP BY offer_type",
+    const totalVanzare = await DB.query(
+      "SELECT COUNT(*) FROM listing WHERE offer_type ='Vând';",
     );
-
+    const avgPriceChirie = await DB.query(
+      "SELECT AVG(price) FROM listing WHERE offer_type IN ('De închiriat lunar', 'De închiriat pe zi');",
+    );
+    const avgPriceVanzare = await DB.query(
+      "SELECT AVG(price) FROM listing WHERE offer_type ='Vând';",
+    );
+    const avgArea = await DB.query("SELECT AVG(m2) FROM listing;");
+    const avgPricesPerSector = await DB.query(
+      "SELECT zone, CEIL(AVG(CASE WHEN offer_type = 'De închiriat lunar' THEN price END)) AS avgChirie, CEIL(AVG(CASE WHEN offer_type = 'Vând' THEN price END)) AS avgVanzare FROM listing WHERE zone IN ('Botanica', 'Ciocana', 'Centru', 'Râșcani', 'Buiucani') AND offer_type IN ('Vând', 'De închiriat lunar') GROUP BY zone;",
+    );
     res.json({
-      total: total.rows,
-      avgPrice: avarage.rows,
-      avgPricePerM2: avaragem2.rows,
+      totalListings: Number(totalListings.rows[0].count),
+      totalChirie: Number(totalChirie.rows[0].count),
+      totalVanzare: Number(totalVanzare.rows[0].count),
+      avgPriceChirie: Math.round(Number(avgPriceChirie.rows[0].avg)),
+      avgPriceVanzare: Math.round(Number(avgPriceVanzare.rows[0].avg)),
+      avgArea: Math.round(Number(avgArea.rows[0].avg)),
+      avgPricesPerSector: avgPricesPerSector.rows,
     });
   } catch (err) {
     console.error("STATS ERROR:", err);
@@ -85,7 +98,11 @@ app.get("/stats", async (req, res) => {
   }
 });
 /*
-COUNT(*) — total listări active
-AVG(price) — preț mediu
-AVG(price / m2) — preț mediu per m²
+  sector: "Centru", avgChirie: 520, avgVanzare: 62000 
+  totalListings: 26140,
+  totalChirie: 15820,
+  totalVanzare: 10320,
+  avgPriceChirie: 412,
+  avgPriceVanzare: 42500,
+  avgArea: 52,
 */

@@ -11,7 +11,6 @@ const SECTORS = [
   "Buiucani",
   "Rîșcani",
   "Ciocana",
-  "Telecentru",
 ];
 
 const OFFER_TYPES: Array<{ label: string; value: string | "Toate" }> = [

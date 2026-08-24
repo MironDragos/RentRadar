@@ -1,11 +1,6 @@
+"use client"
+import { useEffect, useState } from "react";
 import PriceChartSection from "./components/PriceChartSection";
-
-async function getStats() {
-  const res = await fetch("http://localhost:3001/stats", {
-    cache: "no-store",
-  });
-  return res.json();
-}
 
 // TODO: înlocuiește cu fetch către Express /stats/history (sau echivalent)
 const HISTORY = [
@@ -25,16 +20,23 @@ const DEALS = [
   { title: "3 camere, Centru", price: 480, pricePerM2: 6.4, drop: -9 },
 ];
 
-export default async function Home() {
-  const STATS = await getStats();
-
-  const totalListings = STATS.total[0]?.count ?? null;
-  const avgRent = STATS.avgPrice.find(
-    (r: { offer_type: string; avg: number }) => r.offer_type === "chirie",
-  )?.avg;
-  const avgSale = STATS.avgPrice.find(
-    (r: { offer_type: string; avg: number }) => r.offer_type === "vanzare",
-  )?.avg;
+export default  function Home() {
+  const [stats, setStats] = useState({
+    totalListings: "",
+    avgPriceChirie: "",
+    avgPriceVanzare: "",
+  });
+  useEffect(() => {
+    async function getData() {
+      const res = await fetch(`http://localhost:3001/stats`);
+      const data = await res.json();
+      setStats(data);
+    }
+    getData();
+  }, []);
+  const totalListings = stats.totalListings;
+  const avgRent = stats.avgPriceChirie;
+  const avgSale = stats.avgPriceVanzare;
 
   return (
     <main className="mx-auto max-w-6xl px-6">
@@ -62,16 +64,20 @@ export default async function Home() {
         <div className="grid grid-cols-2 gap-px bg-line">
           <StatWindow
             label="Anunțuri active"
-            value={totalListings ? Number(totalListings).toLocaleString("ro-RO") : "—"}
+            value={
+              totalListings
+                ? Number(totalListings).toLocaleString("ro-RO")
+                : "—"
+            }
             lit
           />
           <StatWindow
             label="Preț mediu — chirie"
-            value={avgRent ? `${Math.round(avgRent)} €` : "—"}
+            value={avgRent}
           />
           <StatWindow
             label="Preț mediu — vânzare"
-            value={avgSale ? `${Math.round(avgSale)} €` : "—"}
+            value={avgSale}
           />
           <StatWindow label="Azi" value="Live" lit accent="alt" />
         </div>
@@ -93,9 +99,7 @@ export default async function Home() {
       {/* OFERTE BOMBĂ */}
       <section className="border border-t-0 border-line px-8 py-12">
         <div className="mb-8 flex items-baseline justify-between">
-          <h2 className="font-display text-2xl tracking-wide">
-            OFERTE BOMBĂ
-          </h2>
+          <h2 className="font-display text-2xl tracking-wide">OFERTE BOMBĂ</h2>
           <a
             href="/deals"
             className="font-mono text-xs uppercase tracking-widest text-accent hover:underline"
@@ -110,9 +114,7 @@ export default async function Home() {
               <p className="font-mono text-xs uppercase tracking-widest text-accent">
                 {deal.drop}%
               </p>
-              <h3 className="mt-2 font-body text-lg font-bold">
-                {deal.title}
-              </h3>
+              <h3 className="mt-2 font-body text-lg font-bold">{deal.title}</h3>
               <p className="mt-4 font-mono text-2xl">{deal.price} €</p>
               <p className="font-mono text-xs text-text/50">
                 {deal.pricePerM2} €/m²

@@ -1,14 +1,7 @@
-import PriceChartSection from "../components/PriceChartSection";
+"use client";
 
-// TODO: înlocuiește cu fetch către Express /stats
-const OVERVIEW = {
-  totalListings: 26140,
-  totalChirie: 15820,
-  totalVanzare: 10320,
-  avgPriceChirie: 412,
-  avgPriceVanzare: 42500,
-  avgArea: 52,
-};
+import PriceChartSection from "../components/PriceChartSection";
+import { useEffect, useState } from "react";
 
 // TODO: înlocuiește cu fetch către Express /stats/history
 const HISTORY = [
@@ -22,30 +15,41 @@ const HISTORY = [
 ];
 
 // TODO: înlocuiește cu fetch către Express /stats/by-sector (GROUP BY sector, offer_type)
-const BY_SECTOR = [
-  { sector: "Centru", avgChirie: 520, avgVanzare: 62000 },
-  { sector: "Botanica", avgChirie: 390, avgVanzare: 44000 },
-  { sector: "Buiucani", avgChirie: 410, avgVanzare: 47000 },
-  { sector: "Rîșcani", avgChirie: 375, avgVanzare: 41000 },
-  { sector: "Ciocana", avgChirie: 340, avgVanzare: 36500 },
-  { sector: "Telecentru", avgChirie: 395, avgVanzare: 43000 },
-];
 
 export default function StatsPage() {
-  const maxChirie = Math.max(...BY_SECTOR.map((s) => s.avgChirie));
-  const maxVanzare = Math.max(...BY_SECTOR.map((s) => s.avgVanzare));
-
+  const [overView, setOverView] = useState({
+    totalListings: "",
+    totalChirie: "",
+    totalVanzare: "",
+    avgPriceChirie: "",
+    avgPriceVanzare: "",
+    avgArea: "",
+  });
+  const [bySector, setBySector] = useState<
+    { zone: string; avgchirie: number; avgvanzare: number }[]
+  >([]);
+  useEffect(() => {
+    async function getData() {
+      const res = await fetch(`http://localhost:3001/stats`);
+      const data = await res.json();
+      setOverView(data);
+      setBySector(data.avgPricesPerSector ?? []);
+    }
+    getData();
+  }, []);
+  const maxChirie = Math.max(...bySector.map((s) => s.avgchirie));
+  const maxVanzare = Math.max(...bySector.map((s) => s.avgvanzare));
   return (
     <main className="mx-auto max-w-6xl px-6 py-16">
       <div className="mb-10">
         <p className="font-mono text-xs uppercase tracking-widest text-accent">
-          date live · 999.md
+          date live
         </p>
         <h1 className="mt-2 font-display text-4xl tracking-wide md:text-5xl">
           STATISTICI
         </h1>
         <p className="mt-3 max-w-md font-body text-sm text-text/70">
-          Piața imobiliară din Chișinău — chirii și vânzări, urmărite zilnic.
+          Piața imobiliară din Chișinău, chirii și vânzări, urmărite zilnic.
         </p>
       </div>
 
@@ -53,30 +57,24 @@ export default function StatsPage() {
       <div className="grid grid-cols-2 gap-px border border-line bg-line md:grid-cols-3">
         <StatWindow
           label="Anunțuri active"
-          value={OVERVIEW.totalListings.toLocaleString("ro-RO")}
+          value={overView.totalListings}
           lit
         />
-        <StatWindow
-          label="Anunțuri chirie"
-          value={OVERVIEW.totalChirie.toLocaleString("ro-RO")}
-        />
-        <StatWindow
-          label="Anunțuri vânzare"
-          value={OVERVIEW.totalVanzare.toLocaleString("ro-RO")}
-        />
+        <StatWindow label="Anunțuri chirie" value={overView.totalChirie} />
+        <StatWindow label="Anunțuri vânzare" value={overView.totalVanzare} />
         <StatWindow
           label="Preț mediu chirie"
-          value={`${OVERVIEW.avgPriceChirie} €`}
+          value={`${overView.avgPriceChirie} €`}
           lit
           accent="alt"
         />
         <StatWindow
           label="Preț mediu vânzare"
-          value={`${OVERVIEW.avgPriceVanzare.toLocaleString("ro-RO")} €`}
+          value={`${overView.avgPriceVanzare} €`}
           lit
           accent="alt"
         />
-        <StatWindow label="Suprafață medie" value={`${OVERVIEW.avgArea} m²`} />
+        <StatWindow label="Suprafață medie" value={`${overView.avgArea} m²`} />
       </div>
 
       {/* GRAFIC EVOLUȚIE */}
@@ -97,22 +95,23 @@ export default function StatsPage() {
             <span>Sector</span>
             <span>Chirie · Vânzare</span>
           </div>
-          {BY_SECTOR.sort((a, b) => b.avgVanzare - a.avgVanzare).map(
-            (s, i) => (
+          {bySector
+            .sort((a, b) => b.avgvanzare - a.avgvanzare)
+            .map((s, i) => (
               <div
-                key={s.sector}
+                key={s.zone}
                 className={`grid grid-cols-[1fr_auto] items-center gap-4 px-6 py-4 ${
                   i !== 0 ? "border-t border-line" : ""
                 }`}
               >
                 <div>
-                  <span className="font-body text-sm">{s.sector}</span>
+                  <span className="font-body text-sm">{s.zone}</span>
                   <div className="mt-2 flex flex-col gap-1">
                     <div className="h-2 bg-bg">
                       <div
                         className="h-full bg-accent-alt"
                         style={{
-                          width: `${(s.avgChirie / maxChirie) * 100}%`,
+                          width: `${(s.avgchirie / maxChirie) * 100}%`,
                         }}
                       />
                     </div>
@@ -120,21 +119,18 @@ export default function StatsPage() {
                       <div
                         className="h-full bg-accent"
                         style={{
-                          width: `${(s.avgVanzare / maxVanzare) * 100}%`,
+                          width: `${(s.avgvanzare / maxVanzare) * 100}%`,
                         }}
                       />
                     </div>
                   </div>
                 </div>
                 <div className="text-right font-mono text-sm">
-                  <p className="text-accent-alt">{s.avgChirie} €</p>
-                  <p className="text-accent">
-                    {s.avgVanzare.toLocaleString("ro-RO")} €
-                  </p>
+                  <p className="text-accent-alt">{s.avgchirie} €</p>
+                  <p className="text-accent">{s.avgvanzare} €</p>
                 </div>
               </div>
-            ),
-          )}
+            ))}
         </div>
       </div>
     </main>
