@@ -2,6 +2,7 @@ import { scrape } from "./scraper/scrape.js";
 import type { Listing } from "./types/listing.js";
 import { collectLinks } from "./scraper/collectLinks.js";
 import { saveListing } from "./services/serviceListings.js";
+import { markInactiveSince } from "./repositories/repositoryListings.js";
 
 function simultanios(startIndex: number, count: number, links: string[]) {
   var list = [];
@@ -11,6 +12,7 @@ function simultanios(startIndex: number, count: number, links: string[]) {
   return list;
 }
 async function run() {
+  const runStartDate = new Date();
   const links: string[] = await collectLinks();
   var total_links = links.length;
   const N = 5;
@@ -33,5 +35,8 @@ async function run() {
       console.log(`Eroare la ${links[i]} deoarece ${error}`);
     }
   }
+  console.log("Marking inactive");
+  const inactiveCount = await markInactiveSince(runStartDate);
+  console.log(`I marked ${inactiveCount} listings inactive.`);
 }
 await run();

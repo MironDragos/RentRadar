@@ -47,3 +47,25 @@ export async function updateLastCheck(id: string) {
   );
   return rezultat.rowCount;
 }
+export async function markInactiveSince(runStartDate: Date) {
+    const rezultat = await DB.query(
+        "UPDATE listing SET active = false WHERE last_check < $1 AND active = true",
+        [runStartDate]
+    );
+    return rezultat.rowCount;
+}
+export async function findPotentialDuplicate(listing: Listing) {
+    const rezultat = await DB.query(
+        `SELECT id_extern FROM listing 
+         WHERE zone = $1 
+           AND rooms = $2 
+           AND floor = $3 
+           AND m2 BETWEEN $4 - 2 AND $4 + 2 
+           AND offer_type = $5 
+           AND active = true 
+           AND id_extern != $6 
+         LIMIT 1`,
+        [listing.zone, listing.rooms, listing.floor, listing.m2, listing.offer_type, listing.id_extern]
+    );
+    return rezultat.rows[0]?.id_extern || null;
+}

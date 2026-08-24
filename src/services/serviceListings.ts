@@ -2,16 +2,25 @@ import type { Listing } from "../types/listing.js";
 import {
   findByExternalId,
   updateListingData,
+  insertListing,
+  updatePrice,
+  updateLastCheck,
+  findPotentialDuplicate, 
 } from "../repositories/repositoryListings.js";
-import { insertListing } from "../repositories/repositoryListings.js";
-import { updatePrice } from "../repositories/repositoryListings.js";
-import { updateLastCheck } from "../repositories/repositoryListings.js";
 import { DB } from "../db/db.js";
 
 export async function saveListing(listing: Listing) {
   const pre_old_listing = await findByExternalId(listing.id_extern);
   const old_listing = pre_old_listing[0];
+
   if (old_listing === undefined) {
+    const duplicate = await findPotentialDuplicate(listing);
+    if (duplicate) {
+      console.log(`SKIP: Duplicat pentru ${listing.id_extern}. Păstrăm ID-ul: ${duplicate.id_extern}`);
+      await updateLastCheck(duplicate.id_extern); 
+      return; 
+    }
+
     await insertListing(listing);
     console.log("was insereted");
   } else if (old_listing.price != listing.price) {
