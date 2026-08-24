@@ -19,7 +19,7 @@ export async function collectLinks() {
   const page = await browser.newPage({ userAgent: randomUA });
 
   let preTotalLinks: string[][] = [];
-
+  let maxBlankPages = 3;
   for (var i = 0; i < pages; i++) {
     try {
       await page.goto(
@@ -49,14 +49,28 @@ export async function collectLinks() {
         return Array.from(ads);
       })) as string[];
       if (links.length === 0) {
-        break;
+        maxBlankPages--;
+        if (maxBlankPages <= 0) {
+          console.log("3 tries have failed");
+          break;
+        }
+        await sleep(randomDelay(1000, 3000));
+        continue;
       }
+
+      maxBlankPages = 3;
       preTotalLinks.push(links);
       console.log(
         `Am colectat cu succes ${links.length} linkuri. Am colectat pana acum: ${i} de pagini`,
       );
     } catch (error: any) {
       console.log(`Eroare la pagina ${i + 1}: ${error.message}`);
+      maxBlankPages--;
+      if (maxBlankPages <= 0) {
+        console.log("3 erori consecutive. Oprim colectarea.");
+        break;
+      }
+      await sleep(randomDelay(5000, 10000));
       continue;
     }
 
