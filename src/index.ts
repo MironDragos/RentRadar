@@ -15,7 +15,7 @@ async function run() {
   const runStartDate = new Date();
   const links: string[] = await collectLinks();
   var total_links = links.length;
-  const N = 5;
+  const N = 7;
   for (var i = 0; i < links.length; i += N) {
     total_links -= N;
     try {

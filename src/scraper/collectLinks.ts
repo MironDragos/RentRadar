@@ -70,11 +70,11 @@ export async function collectLinks() {
         console.log("3 erori consecutive. Oprim colectarea.");
         break;
       }
-      await sleep(randomDelay(5000, 10000));
+      await sleep(randomDelay(1000, 3000));
       continue;
     }
 
-    await sleep(randomDelay(1000, 3000));
+    await sleep(randomDelay(400, 100));
   }
   const totalLinks: string[] = [...new Set(preTotalLinks.flat())];
 

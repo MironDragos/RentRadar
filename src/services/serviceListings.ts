@@ -6,10 +6,12 @@ import {
   updatePrice,
   updateLastCheck,
   findPotentialDuplicate, 
+  markInactiveSince
 } from "../repositories/repositoryListings.js";
 import { DB } from "../db/db.js";
 
 export async function saveListing(listing: Listing) {
+  const currentDate = new Date();
   const pre_old_listing = await findByExternalId(listing.id_extern);
   const old_listing = pre_old_listing[0];
 
