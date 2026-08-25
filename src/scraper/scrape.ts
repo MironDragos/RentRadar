@@ -81,6 +81,8 @@ export async function scrape(link: string) {
     return;
   }
   const street = (extras.street?.value ?? "").trim();
+  const houseNumberRaw = (extras.appartment?.value ?? "").trim();
+  const houseNumber = houseNumberRaw === "." ? "" : houseNumberRaw;
   const surface = caracteristici.controls.find(
     (c: any) => c.title === "Suprafață totală",
   );
@@ -105,16 +107,17 @@ export async function scrape(link: string) {
   }
 
   const listing: Listing = {
-    id_extern: extras.id,
-    offer_type: extractOfferType(extras.offerType.value.translated),
-    title: extras.title,
-    price: price,
-    zone: zone,
-    street: street,
-    m2: m2,
-    rooms: Number(extractRoom(rooms.feature.value.translated)),
-    floor: Number(extractFloor(floor.feature.value.translated)),
-  };
+  id_extern: extras.id,
+  offer_type: extractOfferType(extras.offerType.value.translated),
+  title: extras.title,
+  price: price,
+  zone: zone,
+  street: street,
+  houseNumber: houseNumber,
+  m2: m2,
+  rooms: Number(extractRoom(rooms.feature.value.translated)),
+  floor: Number(extractFloor(floor.feature.value.translated)),
+};
   await sleep(randomDelay(400, 1000));
   return listing;
 }
