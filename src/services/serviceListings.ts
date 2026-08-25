@@ -5,7 +5,8 @@ import {
   insertListing,
   updatePrice,
   updateLastCheck,
-  findPotentialDuplicate, 
+  findPotentialDuplicate,
+  markInactiveSince,
 } from "../repositories/repositoryListings.js";
 import { DB } from "../db/db.js";
 
@@ -16,9 +17,11 @@ export async function saveListing(listing: Listing) {
   if (old_listing === undefined) {
     const duplicate = await findPotentialDuplicate(listing);
     if (duplicate) {
-      console.log(`SKIP: Duplicat pentru ${listing.id_extern}. Păstrăm ID-ul: ${duplicate.id_extern}`);
-      await updateLastCheck(duplicate.id_extern); 
-      return; 
+      console.log(
+        `SKIP: Duplicat pentru ${listing.id_extern}. Păstrăm ID-ul: ${duplicate}`,
+      );
+      await updateLastCheck(duplicate);
+      return;
     }
 
     await insertListing(listing);
