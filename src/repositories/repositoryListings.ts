@@ -72,11 +72,11 @@ export async function findPotentialDuplicate(listing: Listing) {
            AND house_number = $2
            AND house_number != ''
            AND rooms = $3 
-           AND m2 BETWEEN $5 - 5 AND $5 + 5
-           AND offer_type = $6 
-           AND price BETWEEN $7 * 0.80 AND $7 * 1.20
+           AND m2 BETWEEN $4 - 5 AND $4 + 5
+           AND offer_type = $5 
+           AND price BETWEEN $6 * 0.80 AND $6 * 1.20
            AND active = true 
-           AND id_extern != $8 
+           AND id_extern != $7
          LIMIT 1`,
     [
       listing.street,
