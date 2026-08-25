@@ -116,7 +116,5 @@ export async function scrape(link: string) {
     floor: Number(extractFloor(floor.feature.value.translated)),
   };
   await sleep(randomDelay(400, 1000));
-  console.log(extras);
   return listing;
 }
-await scrape("https://999.md/ro/78392686");
