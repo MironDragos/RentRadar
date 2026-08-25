@@ -4,6 +4,7 @@ export type Listing = {
   title: string;
   price: number;
   zone: string;
+  street: string;
   m2: number;
   rooms: number;
   floor: number;

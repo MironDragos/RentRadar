@@ -80,6 +80,7 @@ export async function scrape(link: string) {
     console.log("SKIP ANUNT");
     return;
   }
+  const street = (extras.street?.value ?? "").trim();
   const surface = caracteristici.controls.find(
     (c: any) => c.title === "Suprafață totală",
   );
@@ -109,10 +110,13 @@ export async function scrape(link: string) {
     title: extras.title,
     price: price,
     zone: zone,
+    street: street,
     m2: m2,
     rooms: Number(extractRoom(rooms.feature.value.translated)),
     floor: Number(extractFloor(floor.feature.value.translated)),
   };
   await sleep(randomDelay(400, 1000));
+  console.log(extras);
   return listing;
 }
+await scrape("https://999.md/ro/78392686");
