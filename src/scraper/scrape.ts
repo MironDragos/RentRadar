@@ -83,6 +83,7 @@ export async function scrape(link: string) {
   const street = (extras.street?.value ?? "").trim();
   const houseNumberRaw = (extras.appartment?.value ?? "").trim();
   const houseNumber = houseNumberRaw === "." ? "" : houseNumberRaw;
+  const offer_type= extractOfferType(extras.offerType.value.translated)
   const surface = caracteristici.controls.find(
     (c: any) => c.title === "Suprafață totală",
   );
@@ -101,14 +102,22 @@ export async function scrape(link: string) {
   } else {
     zone = extras.city.value.translated;
   }
-  if (!surface || !floor || !rooms || m2 < 10 || m2 > 500) {
+  if (
+    !surface ||
+    !floor ||
+    !rooms ||
+    m2 < 10 ||
+    m2 > 500 ||
+    (offer_type === "De închiriat lunar" && price>15000) ||
+    (offer_type === "De închiriat lunar" && price>400)
+  ) {
     console.log("SKIP ANUNT");
     return;
   }
 
   const listing: Listing = {
   id_extern: extras.id,
-  offer_type: extractOfferType(extras.offerType.value.translated),
+  offer_type: offer_type,
   title: extras.title,
   price: price,
   zone: zone,
