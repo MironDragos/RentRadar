@@ -22,9 +22,7 @@ async function run() {
       const list: Listing[] = await Promise.all(simultanios(i, N, links));
 
       if (list.length === N && list.every((l) => l !== undefined)) {
-        for (const l of list) {
-          await saveListing(l);
-        }
+        await Promise.all(list.map((l) => saveListing(l)));
       }
       console.log(`It worked for a batch of ${N}. ${total_links} left`);
     } catch (error: any) {
