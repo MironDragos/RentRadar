@@ -3,7 +3,7 @@ import type { Listing } from "../types/listing.js";
 
 export async function updateListingData(listing: Listing) {
   const rezultat = await DB.query(
-    "UPDATE listing SET zone = ($1), street = ($2), house_number = ($3), title = ($4), m2 = ($5), rooms = ($6), floor = ($7) WHERE id_extern = ($8)",
+    "UPDATE listing SET zone = ($1), street = ($2), house_number = ($3), title = ($4), m2 = ($5), rooms = ($6), floor = ($7), housing_type = ($8), link = ($9) WHERE id_extern = ($10)",
     [
       listing.zone,
       listing.street,
@@ -12,6 +12,8 @@ export async function updateListingData(listing: Listing) {
       listing.m2,
       listing.rooms,
       listing.floor,
+      listing.housing_type,
+      `https://999.md/ro/${listing.id_extern}`,
       listing.id_extern,
     ],
   );
@@ -27,7 +29,7 @@ export async function findByExternalId(id: string) {
 }
 export async function insertListing(listing: Listing) {
   const rezultat = await DB.query(
-    "INSERT INTO listing (id_extern, offer_type, title, price, zone, street, house_number, m2, rooms, floor, link) VALUES (($1),($2),($3),($4),($5),($6),($7),($8),($9),($10),($11))",
+    "INSERT INTO listing (id_extern, offer_type, title, price, zone, street, house_number, m2, rooms, floor, housing_type ,link) VALUES (($1),($2),($3),($4),($5),($6),($7),($8),($9),($10),($11),($12))",
     [
       listing.id_extern,
       listing.offer_type,
@@ -39,7 +41,8 @@ export async function insertListing(listing: Listing) {
       listing.m2,
       listing.rooms,
       listing.floor,
-      `www.999.md/ro/${listing.id_extern}`,
+      listing.housing_type,
+      `https://999.md/ro/${listing.id_extern}`,
     ],
   );
   return rezultat.rowCount;
@@ -78,6 +81,7 @@ export async function findPotentialDuplicate(listing: Listing) {
            AND price BETWEEN $7 * 0.80 AND $7 * 1.20
            AND active = true 
            AND id_extern != $8
+           AND housing_type = $9
          LIMIT 1`,
     [
       listing.street,
@@ -88,6 +92,7 @@ export async function findPotentialDuplicate(listing: Listing) {
       listing.offer_type,
       listing.price,
       listing.id_extern,
+      listing.housing_type,
     ],
   );
   return rezultat.rows[0]?.id_extern || null;

@@ -1,6 +1,17 @@
 import { chromium } from "playwright";
 import { userAgents } from "./userAgents.js";
+import { scrape } from "./scrape.js";
+import type { Listing } from "../types/listing.js";
+import { saveListing } from "../services/serviceListings.js";
+import { markInactiveSince } from "../repositories/repositoryListings.js";
 
+function simultanios(startIndex: number, count: number, links: string[]) {
+  var list = [];
+  for (var i = startIndex; i < startIndex + count; i++) {
+    list.push(scrape(links[i]));
+  }
+  return list;
+}
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -9,8 +20,7 @@ function randomDelay(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-export async function collectLinks() {
-  const pages = 9999;
+async function sampleScrape() {
   const randomUA =
     userAgents[Math.floor(Math.random() * userAgents.length)] ?? userAgents[0]!;
 
@@ -19,7 +29,7 @@ export async function collectLinks() {
 
   let preTotalLinks: string[][] = [];
   let maxBlankPages = 3;
-  for (var i = 0; i < pages; i++) {
+  for (var i = 0; i < 2; i++) {
     try {
       await page.goto(
         `https://999.md/ro/list/real-estate/apartments-and-rooms?page=${i + 1}`,
@@ -78,5 +88,27 @@ export async function collectLinks() {
   const totalLinks: string[] = [...new Set(preTotalLinks.flat())];
 
   await browser.close();
-  return totalLinks;
+
+  const runStartDate = new Date();
+  const links: string[] = totalLinks;
+  var total_links = links.length;
+  const N = 7;
+  for (var i = 0; i < links.length; i += N) {
+    total_links -= N;
+    try {
+      const list: Listing[] = await Promise.all(simultanios(i, N, links));
+
+      if (list.length === N && list.every((l) => l !== undefined)) {
+        await Promise.all(list.map((l) => saveListing(l)));
+      }
+      console.log(`It worked for a batch of ${N}. ${total_links} left`);
+    } catch (error: any) {
+      if (error.message === "RATE_LIMITED") {
+        console.log("RATE LIMIT detected — stoped the proccess.");
+        break;
+      }
+      console.log(`Eroare la ${links[i]} deoarece ${error}`);
+    }
+  }
 }
+await sampleScrape();

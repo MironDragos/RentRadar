@@ -9,4 +9,5 @@ export type Listing = {
   m2: number;
   rooms: number;
   floor: number;
+  housing_type: string;
 };
