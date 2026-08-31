@@ -97,6 +97,26 @@ app.get("/stats", async (req, res) => {
     res.status(500).json({ error: "failed" });
   }
 });
+app.get("/deals", async (req, res) => {
+  const averageVanzare = await DB.query(
+    "SELECT AVG(price/m2) FROM listing offer_type = 'Vând'",
+  );
+  const averageChirie = await DB.query(
+    "SELECT AVG(price/m2) FROM listing offer_type = 'Vând'",
+  );
+  const dealsVanzare = await DB.query(
+    "SELECT * FROM(SELECT id, m2, zone, rooms, ROUND((price/m2),2) as price_per_m2 FROM listing WHERE offer_type = 'Vând' AND active= TRUE AND zone IN ('Centru','Râșcani','Ciocana','Botanica','Buiucani')) WHERE price_per_m2>1000 ORDER BY price_per_m2 ASC LIMIT 20",
+  );
+  const dealsChirie = await DB.query(
+    "SELECT * FROM (SELECT id, m2, zone, rooms, ROUND((price/m2),2) as price_per_m2 FROM listing WHERE offer_type = 'De închiriat lunar' AND active = TRUE AND zone IN ('Centru','Râșcani','Ciocana','Botanica','Buiucani')) WHERE price_per_m2>1 ORDER BY price_per_m2 ASC LIMIT 20",
+  );
+  res.json({
+    avarageVanzare: averageVanzare.rows,
+    averageChirie: averageChirie.rows,
+    dealsVanzare: dealsVanzare.rows,
+    dealsChirie: dealsChirie.rows,
+  });
+});
 /*
   sector: "Centru", avgChirie: 520, avgVanzare: 62000 
   totalListings: 26140,

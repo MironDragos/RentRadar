@@ -153,7 +153,7 @@ export default function ListingsPage() {
           >
             <span className="font-body text-sm">{l.title}</span>
             <span className="font-mono text-xs uppercase tracking-widest text-text/60">
-              {l.offer_type === "chirie" ? "chirie" : "vânzare"}
+              {l.offer_type}
             </span>
             <span className="font-mono text-xs text-text/60">{l.zone}</span>
             <span className="font-mono text-xs text-text/60">{l.m2} m²</span>

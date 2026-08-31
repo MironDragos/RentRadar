@@ -23,9 +23,9 @@ const mono = PT_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "RentRadar — chirii Chișinău, urmărite zilnic",
+  title: "RentRadar | imobiliare Chișinău, urmărite zilnic",
   description:
-    "Evoluția prețurilor la chirie în Chișinău, culeasă zilnic de pe 999.md.",
+    "Evoluția prețurilor la imobiliare în Chișinău, culese zilnic de pe 999.md.",
 };
 
 export default function RootLayout({

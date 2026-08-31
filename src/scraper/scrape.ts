@@ -152,9 +152,11 @@ export async function scrape(link: string) {
     !rooms ||
     m2 < 10 ||
     m2 > 500 ||
-    (offer_type === "De închiriat lunar" && price > 15000) ||
-    (offer_type === "De închiriat pe zi" && price > 400) ||
-    (offer_type === "Vând" && (price > 1000000 || price < 10000))
+    (offer_type === "De închiriat lunar" && (price > 15000 || price < 50)) ||
+    (offer_type === "De închiriat pe zi" && (price > 400 || price < 5)) ||
+    (offer_type === "Vând" && (price > 1000000 || price < 10000)) ||
+    m2 / price < 600 ||
+    m2 / price > 6000
   ) {
     console.log("SKIP ANUNT");
     return;
@@ -177,4 +179,4 @@ export async function scrape(link: string) {
 
   return listing;
 }
-await scrape("https://999.md/ro/103346702");
+// await scrape("https://999.md/ro/105043040");
