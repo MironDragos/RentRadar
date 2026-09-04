@@ -74,7 +74,7 @@ app.get("/stats", async (req, res) => {
       "SELECT COUNT(*) FROM listing WHERE offer_type ='Vând';",
     );
     const avgPriceChirie = await DB.query(
-      "SELECT AVG(price) FROM listing WHERE offer_type IN ('De închiriat lunar', 'De închiriat pe zi');",
+      "SELECT AVG(price) FROM listing WHERE offer_type IN ('De închiriat lunar');",
     );
     const avgPriceVanzare = await DB.query(
       "SELECT AVG(price) FROM listing WHERE offer_type ='Vând';",
@@ -82,6 +82,12 @@ app.get("/stats", async (req, res) => {
     const avgArea = await DB.query("SELECT AVG(m2) FROM listing;");
     const avgPricesPerSector = await DB.query(
       "SELECT zone, CEIL(AVG(CASE WHEN offer_type = 'De închiriat lunar' THEN price END)) AS avgChirie, CEIL(AVG(CASE WHEN offer_type = 'Vând' THEN price END)) AS avgVanzare FROM listing WHERE zone IN ('Botanica', 'Ciocana', 'Centru', 'Râșcani', 'Buiucani') AND offer_type IN ('Vând', 'De închiriat lunar') GROUP BY zone;",
+    );
+    const avgPricem2History = await DB.query(
+      "SELECT avg_vanzare_m2 FROM stats_history ORDER BY date DESC LIMIT 7",
+    );
+    const dealsFirstPage = await DB.query(
+      "SELECT * FROM (SELECT id, price, m2, zone, rooms, ROUND((price/m2),2) as price_per_m2 FROM listing WHERE offer_type = 'De închiriat lunar' AND active = TRUE AND zone IN ('Centru','Râșcani','Ciocana','Botanica','Buiucani')) WHERE price_per_m2>1 ORDER BY price_per_m2 ASC LIMIT 3",
     );
     res.json({
       totalListings: Number(totalListings.rows[0].count),
@@ -91,6 +97,8 @@ app.get("/stats", async (req, res) => {
       avgPriceVanzare: Math.round(Number(avgPriceVanzare.rows[0].avg)),
       avgArea: Math.round(Number(avgArea.rows[0].avg)),
       avgPricesPerSector: avgPricesPerSector.rows,
+      avgPricem2History: avgPricem2History.rows,
+      dealsFirstPage: dealsFirstPage.rows
     });
   } catch (err) {
     console.error("STATS ERROR:", err);
@@ -105,10 +113,10 @@ app.get("/deals", async (req, res) => {
     "SELECT AVG(price/m2) FROM listing WHERE offer_type = 'De închiriat lunar'",
   );
   const dealsVanzare = await DB.query(
-    "SELECT * FROM(SELECT id, price,m2, zone, rooms, ROUND((price/m2),2) as price_per_m2 FROM listing WHERE offer_type = 'Vând' AND active= TRUE AND zone IN ('Centru','Râșcani','Ciocana','Botanica','Buiucani')) WHERE price_per_m2>1000 ORDER BY price_per_m2 ASC LIMIT 21",
+    "SELECT * FROM (SELECT id, price, m2, zone, rooms, ROUND((price/m2),2) as price_per_m2 FROM listing WHERE offer_type = 'Vând' AND active = TRUE AND zone IN ('Centru','Râșcani','Ciocana','Botanica','Buiucani')) WHERE price_per_m2 > 1000 ORDER BY price_per_m2 ASC LIMIT 21",
   );
   const dealsChirie = await DB.query(
-    "SELECT * FROM (SELECT id, price,m2, zone, rooms, ROUND((price/m2),2) as price_per_m2 FROM listing WHERE offer_type = 'De închiriat lunar' AND active = TRUE AND zone IN ('Centru','Râșcani','Ciocana','Botanica','Buiucani')) WHERE price_per_m2>1 ORDER BY price_per_m2 ASC LIMIT 21",
+    "SELECT * FROM (SELECT id, price, m2, zone, rooms, ROUND((price/m2),2) as price_per_m2 FROM listing WHERE offer_type = 'De închiriat lunar' AND active = TRUE AND zone IN ('Centru','Râșcani','Ciocana','Botanica','Buiucani')) WHERE price_per_m2>1 ORDER BY price_per_m2 ASC LIMIT 21",
   );
   res.json({
     averageVanzare: averageVanzare.rows,
@@ -117,12 +125,3 @@ app.get("/deals", async (req, res) => {
     dealsChirie: dealsChirie.rows,
   });
 });
-/*
-  sector: "Centru", avgChirie: 520, avgVanzare: 62000 
-  totalListings: 26140,
-  totalChirie: 15820,
-  totalVanzare: 10320,
-  avgPriceChirie: 412,
-  avgPriceVanzare: 42500,
-  avgArea: 52,
-*/

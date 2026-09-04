@@ -3,24 +3,27 @@
 import { useState } from "react";
 
 type PricePoint = {
-  label: string; // ex. "Lun", "18 aug"
-  value: number;
+  avg_vanzare_m2: string;
 };
 
 export default function PriceChartSection({ data }: { data: PricePoint[] }) {
+  if (!data || data.length === 0) {
+    return null;
+  }
+
   const [activeIndex, setActiveIndex] = useState(data.length - 1);
   const active = data[activeIndex];
 
   const width = 700;
   const height = 220;
-  const values = data.map((d) => d.value);
+  const values = data.map((d) => Number(d.avg_vanzare_m2));
   const min = Math.min(...values);
   const max = Math.max(...values);
   const range = max - min || 1;
 
   const points = data.map((d, i) => {
-    const x = (i / (data.length - 1)) * width;
-    const y = height - ((d.value - min) / range) * height;
+    const x = data.length > 1 ? (i / (data.length - 1)) * width : width / 2;
+    const y = height - ((Number(d.avg_vanzare_m2) - min) / range) * height;
     return { x, y };
   });
 
@@ -28,7 +31,6 @@ export default function PriceChartSection({ data }: { data: PricePoint[] }) {
 
   return (
     <div className="grid grid-cols-1 gap-px border border-line bg-line md:grid-cols-[2fr_1fr]">
-      {/* GRAFIC */}
       <div className="bg-bg p-8">
         <svg
           viewBox={`0 0 ${width} ${height}`}
@@ -64,10 +66,9 @@ export default function PriceChartSection({ data }: { data: PricePoint[] }) {
             strokeWidth={2}
           />
 
-          {/* linie verticală de reper pe punctul activ */}
           <line
-            x1={points[activeIndex].x}
-            x2={points[activeIndex].x}
+            x1={points[activeIndex]?.x || 0}
+            x2={points[activeIndex]?.x || 0}
             y1={0}
             y2={height}
             stroke="var(--color-accent)"
@@ -90,27 +91,25 @@ export default function PriceChartSection({ data }: { data: PricePoint[] }) {
           ))}
         </svg>
 
-        {/* etichete zile sub grafic */}
         <div className="mt-2 flex justify-between font-mono text-[10px] uppercase tracking-widest text-text/40">
           {data.map((d, i) => (
             <button
-              key={d.label}
+              key={i}
               onClick={() => setActiveIndex(i)}
               className={i === activeIndex ? "text-accent" : ""}
             >
-              {d.label}
+              Ziua {i + 1}
             </button>
           ))}
         </div>
       </div>{" "}
-      {/* BOX — citire valoare curentă */}
       <div className="flex flex-col justify-between bg-panel p-8">
         <div>
           <span className="font-mono text-[11px] uppercase tracking-widest text-text/50">
-            {active.label}
+            Ziua {activeIndex + 1}
           </span>
           <p className="mt-3 font-mono text-4xl text-accent">
-            {active.value} €
+            {active ? Number(active.avg_vanzare_m2).toFixed(2) : "0.00"} €
           </p>
         </div>
 

@@ -3,19 +3,6 @@
 import PriceChartSection from "../components/PriceChartSection";
 import { useEffect, useState } from "react";
 
-// TODO: înlocuiește cu fetch către Express /stats/history
-const HISTORY = [
-  { label: "Lun", value: 398 },
-  { label: "Mar", value: 402 },
-  { label: "Mie", value: 395 },
-  { label: "Joi", value: 410 },
-  { label: "Vin", value: 405 },
-  { label: "Sâm", value: 418 },
-  { label: "Dum", value: 412 },
-];
-
-// TODO: înlocuiește cu fetch către Express /stats/by-sector (GROUP BY sector, offer_type)
-
 export default function StatsPage() {
   const [overView, setOverView] = useState({
     totalListings: "",
@@ -24,9 +11,10 @@ export default function StatsPage() {
     avgPriceChirie: "",
     avgPriceVanzare: "",
     avgArea: "",
+    avgPricem2History: []
   });
   const [bySector, setBySector] = useState<
-    { zone: string; avgchirie: number; avgvanzare: number }[]
+    { zone: string; avgchirie: number; avgvanzare: number; }[]
   >([]);
   useEffect(() => {
     async function getData() {
@@ -82,7 +70,7 @@ export default function StatsPage() {
         <h2 className="mb-8 font-display text-2xl tracking-wide">
           EVOLUȚIA PREȚULUI MEDIU LA CHIRIE
         </h2>
-        <PriceChartSection data={HISTORY} />
+        <PriceChartSection data={overView.avgPricem2History} />
       </div>
 
       {/* PE SECTOARE — chirie + vânzare una lângă alta */}

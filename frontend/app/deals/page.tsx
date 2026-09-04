@@ -90,7 +90,7 @@ export default function DealsPage() {
               , {deal.zone}
             </h3>
             <p className="mt-4 font-mono text-2xl">
-              {deal.price.toLocaleString("ro-RO")} €
+              {deal.price} €
             </p>
             <p className="font-mono text-xs text-text/50">
               {deal.price_per_m2} €/m² · {deal.m2} m²
