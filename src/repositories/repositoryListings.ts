@@ -1,6 +1,14 @@
 import { DB } from "../db/db.js";
 import type { Listing } from "../types/listing.js";
 
+export async function updateLastCheck(id: string) {
+  const rezultat = await DB.query(
+    "UPDATE listing SET last_check = NOW() WHERE id_extern = ($1)",
+    [id],
+  );
+  return rezultat.rowCount;
+}
+
 export async function updateListingData(listing: Listing) {
   const rezultat = await DB.query(
     "UPDATE listing SET zone = ($1), street = ($2), house_number = ($3), title = ($4), m2 = ($5), rooms = ($6), floor = ($7), housing_type = ($8), link = ($9) WHERE id_extern = ($10)",
@@ -54,13 +62,6 @@ export async function updatePrice(price: number, id: string) {
   );
   return rezultat.rowCount;
 }
-export async function updateLastCheck(id: string) {
-  const rezultat = await DB.query(
-    "UPDATE listing SET last_check = NOW() WHERE id_extern = ($1)",
-    [id],
-  );
-  return rezultat.rowCount;
-}
 export async function markInactiveSince(runStartDate: Date) {
   const rezultat = await DB.query(
     "UPDATE listing SET active = false WHERE last_check < $1 AND active = true",
@@ -97,3 +98,11 @@ export async function findPotentialDuplicate(listing: Listing) {
   );
   return rezultat.rows[0]?.id_extern || null;
 }
+export async function updateActiveStatus(id: string) {
+  const rezultat = await DB.query(
+      "UPDATE listing SET active = true WHERE id_extern = ($1);",
+      [id],
+    );
+  return rezultat.rowCount;
+}
+

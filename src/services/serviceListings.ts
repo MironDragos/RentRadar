@@ -6,14 +6,13 @@ import {
   updatePrice,
   updateLastCheck,
   findPotentialDuplicate,
-  markInactiveSince,
+  updateActiveStatus
 } from "../repositories/repositoryListings.js";
-import { DB } from "../db/db.js";
 
 export async function saveListing(listing: Listing) {
   const pre_old_listing = await findByExternalId(listing.id_extern);
   const old_listing = pre_old_listing[0];
-
+  //listing inserted
   if (old_listing === undefined) {
     const duplicate = await findPotentialDuplicate(listing);
     if (duplicate) {
@@ -23,20 +22,20 @@ export async function saveListing(listing: Listing) {
       await updateLastCheck(duplicate);
       return;
     }
-
     await insertListing(listing);
     console.log("was insereted");
+     //price changed
   } else if (old_listing.price != listing.price) {
     await updatePrice(listing.price, listing.id_extern);
     await updateListingData(listing);
-    await DB.query(
-      "INSERT INTO price_history (property_id, old_price, new_price) VALUES (($1),($2),($3))",
-      [old_listing.id, old_listing.price, listing.price],
-    );
+    await updateLastCheck(listing.id_extern);
+    await updateActiveStatus(listing.id_extern)
     console.log("price changed");
+    //listing changed
   } else {
     await updateListingData(listing);
-    console.log("last check changed");
     await updateLastCheck(listing.id_extern);
+    await updateActiveStatus(listing.id_extern)
+    console.log("last check changed");
   }
 }

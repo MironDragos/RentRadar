@@ -179,4 +179,3 @@ export async function scrape(link: string) {
 
   return listing;
 }
-// await scrape("https://999.md/ro/105043040");
