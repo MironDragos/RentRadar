@@ -30,7 +30,7 @@ export default function Home() {
   const totalListings = stats.totalListings;
   const avgRent = stats.avgPriceChirie;
   const avgSale = stats.avgPriceVanzare;
-    const dealsFirstPage = stats.dealsFirstPage;
+  const dealsFirstPage = stats.dealsFirstPage;
 
   return (
     <main className="mx-auto max-w-6xl px-6">
@@ -81,10 +81,8 @@ export default function Home() {
             ultimele 7 zile
           </span>
         </div>
-        <PriceChartSection data={stats.avgPricem2History} />
+        <PriceChartSection data={stats.avgPricem2History.toReversed()} />
       </section>
-
-      {/* OFERTE BOMBĂ */}
       <section className="border border-t-0 border-line px-8 py-12">
         <div className="mb-8 flex items-baseline justify-between">
           <h2 className="font-display text-2xl tracking-wide">OFERTE BOMBĂ</h2>
