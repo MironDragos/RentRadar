@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { Listing } from "../../../src/types/listing";
 
-
 const SECTORS = [
   "Toate",
   "Centru",
@@ -28,7 +27,12 @@ export default function ListingsPage() {
   const [sector, setSector] = useState("Toate");
   const [maxPrice, setMaxPrice] = useState(500000);
   const [page, setPage] = useState(1);
-  const priceCeiling = offerType === "Vând" || offerType==="Toate"? 500000 : offerType === "De închiriat lunar" ? 5000 : 2000
+  const priceCeiling =
+    offerType === "Vând" || offerType === "Toate"
+      ? 500000
+      : offerType === "De închiriat lunar"
+        ? 5000
+        : 2000;
 
   useEffect(() => {
     async function getData() {
@@ -51,7 +55,13 @@ export default function ListingsPage() {
 
   function updateOfferType(next: string | "Toate") {
     setOfferType(next);
-    setMaxPrice(next === "Vând" || next === "Toate"? 500000 : next === "De închiriat lunar" ? 5000 : 2000);
+    setMaxPrice(
+      next === "Vând" || next === "Toate"
+        ? 500000
+        : next === "De închiriat lunar"
+          ? 5000
+          : 2000,
+    );
     setPage(1);
   }
 
@@ -145,9 +155,10 @@ export default function ListingsPage() {
         </div>
 
         {listings.map((l, i) => (
-          <div
+          <a
             key={l.id_extern}
-            className={`grid grid-cols-[1fr_auto_auto_auto_auto] items-center gap-4 px-6 py-4 ${
+            href={`/listings/${l.id}`}
+            className={`grid grid-cols-[1fr_auto_auto_auto_auto] items-center hover:bg-panel transition gap-4 px-6 py-4 ${
               i !== 0 ? "border-t border-line" : ""
             }`}
           >
@@ -160,7 +171,7 @@ export default function ListingsPage() {
             <span className="text-right font-mono text-lg">
               {l.price.toLocaleString("ro-RO")} €
             </span>
-          </div>
+          </a>
         ))}
 
         {listings.length === 0 && (

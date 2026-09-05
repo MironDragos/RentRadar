@@ -34,7 +34,6 @@ export default function Home() {
 
   return (
     <main className="mx-auto max-w-6xl px-6">
-      {/* HERO — grid asimetric de "ferestre" */}
       <section className="grid grid-cols-1 gap-px border border-line bg-line py-20 md:grid-cols-[1fr_1.3fr]">
         <div className="flex flex-col justify-center gap-4 bg-bg px-8 py-10">
           <p className="font-mono text-xs uppercase tracking-widest text-accent">
@@ -71,7 +70,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* EVOLUȚIE PREȚ */}
       <section className="border border-t-0 border-line px-8 py-12">
         <div className="mb-8 flex items-baseline justify-between">
           <h2 className="font-display text-2xl tracking-wide">
@@ -96,20 +94,22 @@ export default function Home() {
 
         <div className="grid grid-cols-1 gap-px bg-line md:grid-cols-3">
           {dealsFirstPage.map((deal: Deal) => (
-            <div key={deal.id} className="bg-panel p-6">
-              <h3 className="mt-2 font-body text-lg font-bold">
-                {deal.rooms === 0
-                  ? "Garsoniera"
-                  : deal.rooms === 1
-                    ? "O camera"
-                    : deal.rooms + " camere"}
-                , {deal.zone}
-              </h3>
-              <p className="mt-4 font-mono text-2xl">{deal.price} €</p>
-              <p className="font-mono text-xs text-text/50">
-                {deal.price_per_m2} €/m²
-              </p>
-            </div>
+            <a href={`/listings/${deal.id}`}>
+              <div key={deal.id} className="bg-panel hover:bg-bg transition p-6">
+                <h3 className="mt-2 font-body text-lg font-bold">
+                  {deal.rooms === 0
+                    ? "Garsoniera"
+                    : deal.rooms === 1
+                      ? "O camera"
+                      : deal.rooms + " camere"}
+                  , {deal.zone}
+                </h3>
+                <p className="mt-4 font-mono text-2xl">{deal.price} €</p>
+                <p className="font-mono text-xs text-text/50">
+                  {deal.price_per_m2} €/m²
+                </p>
+              </div>
+            </a>
           ))}
         </div>
       </section>

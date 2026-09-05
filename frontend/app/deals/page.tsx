@@ -75,27 +75,27 @@ export default function DealsPage() {
 
       <div className="grid grid-cols-1 gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
         {filtered.map((deal: Deal) => (
-          <div key={deal.id} className="bg-panel p-6">
-            <div className="flex items-baseline justify-between">
-              <p className="font-mono text-[11px] uppercase tracking-widest text-text/40">
-                {filter}
+          <a href={`/listings/${deal.id}`}>
+            <div key={deal.id} className="bg-panel hover:bg-bg transition p-6">
+              <div className="flex items-baseline justify-between">
+                <p className="font-mono text-[11px] uppercase tracking-widest text-text/40">
+                  {filter}
+                </p>
+              </div>
+              <h3 className="mt-2 font-body text-lg font-bold">
+                {deal.rooms === 0
+                  ? "Garsoniera"
+                  : deal.rooms === 1
+                    ? "O camera"
+                    : deal.rooms + " camere"}
+                , {deal.zone}
+              </h3>
+              <p className="mt-4 font-mono text-2xl">{deal.price} €</p>
+              <p className="font-mono text-xs text-text/50">
+                {deal.price_per_m2} €/m² · {deal.m2} m²
               </p>
             </div>
-            <h3 className="mt-2 font-body text-lg font-bold">
-              {deal.rooms === 0
-                ? "Garsoniera"
-                : deal.rooms === 1
-                  ? "O camera"
-                  : deal.rooms + " camere"}
-              , {deal.zone}
-            </h3>
-            <p className="mt-4 font-mono text-2xl">
-              {deal.price} €
-            </p>
-            <p className="font-mono text-xs text-text/50">
-              {deal.price_per_m2} €/m² · {deal.m2} m²
-            </p>
-          </div>
+          </a>
         ))}
 
         {filtered.length === 0 && (

@@ -1,4 +1,5 @@
 export type Listing = {
+  id?: number;
   id_extern: string;
   offer_type: string;
   title: string;
