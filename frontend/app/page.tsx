@@ -25,7 +25,7 @@ export default function Home() {
     async function getData() {
       const res = await fetch(`${API_URL}/stats`);
       const data = await res.json();
-      setStats(data);
+      setStats((prev) => ({ ...prev, ...data }));
     }
     getData();
   }, []);
@@ -97,7 +97,10 @@ export default function Home() {
         <div className="grid grid-cols-1 gap-px bg-line md:grid-cols-3">
           {dealsFirstPage.map((deal: Deal) => (
             <a href={`/listings/${deal.id}`}>
-              <div key={deal.id} className="bg-panel hover:bg-bg transition p-6">
+              <div
+                key={deal.id}
+                className="bg-panel hover:bg-bg transition p-6"
+              >
                 <h3 className="mt-2 font-body text-lg font-bold">
                   {deal.rooms === 0
                     ? "Garsoniera"
