@@ -45,7 +45,7 @@ export default function ListingDetailPage() {
       setLoading(true);
       const [listingRes, historyRes] = await Promise.all([
         fetch(`${API_URL}/listings/${id}`),
-        fetch(`${API_URL}listings/${id}/price_history`),
+        fetch(`${API_URL}/listings/${id}/price_history`),
       ]);
       const listingData = await listingRes.json();
       const historyData = await historyRes.json();
