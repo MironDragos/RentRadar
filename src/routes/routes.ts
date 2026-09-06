@@ -4,7 +4,12 @@ import cors from "cors";
 
 export const app = express();
 
-app.use(cors({ origin: "http://localhost:3000" }));
+const allowedOrigins = [
+  "http://localhost:3000",
+  process.env.FRONTEND_URL, 
+].filter(Boolean);
+
+app.use(cors({ origin: allowedOrigins }));
 app.use(express.json());
 
 app.get("/listings", async (req, res) => {
@@ -86,9 +91,6 @@ app.get("/stats", async (req, res) => {
     const avgPricem2History = await DB.query(
       "SELECT avg_vanzare_m2 FROM stats_history ORDER BY date DESC LIMIT 7",
     );
-    const dealsFirstPage = await DB.query(
-      "SELECT * FROM (SELECT id, price, m2, zone, rooms, ROUND((price/m2),2) as price_per_m2 FROM listing WHERE offer_type = 'De închiriat lunar' AND active = TRUE AND zone IN ('Centru','Râșcani','Ciocana','Botanica','Buiucani')) WHERE price_per_m2>1 ORDER BY price_per_m2 ASC LIMIT 3",
-    );
     res.json({
       totalListings: Number(totalListings.rows[0].count),
       totalChirie: Number(totalChirie.rows[0].count),
@@ -98,7 +100,6 @@ app.get("/stats", async (req, res) => {
       avgArea: Math.round(Number(avgArea.rows[0].avg)),
       avgPricesPerSector: avgPricesPerSector.rows,
       avgPricem2History: avgPricem2History.rows,
-      dealsFirstPage: dealsFirstPage.rows
     });
   } catch (err) {
     console.error("STATS ERROR:", err);

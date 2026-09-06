@@ -3,6 +3,8 @@
 import PriceChartSection from "../components/PriceChartSection";
 import { useEffect, useState } from "react";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+
 export default function StatsPage() {
   const [overView, setOverView] = useState({
     totalListings: "",
@@ -18,7 +20,7 @@ export default function StatsPage() {
   >([]);
   useEffect(() => {
     async function getData() {
-      const res = await fetch(`http://localhost:3001/stats`);
+      const res = await fetch(`${API_URL}/stats`);
       const data = await res.json();
       setOverView(data);
       setBySector(data.avgPricesPerSector ?? []);

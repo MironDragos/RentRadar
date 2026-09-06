@@ -18,6 +18,9 @@ const FILTERS: Array<{ label: string; value: OfferType }> = [
   { label: "Vânzare", value: "Vând" },
 ];
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+
+
 export default function DealsPage() {
   const [filter, setFilter] = useState<OfferType | "Vând">("Vând");
   const [deals, setDeals] = useState({
@@ -28,7 +31,7 @@ export default function DealsPage() {
   });
   useEffect(() => {
     async function getData() {
-      const res = await fetch(`http://localhost:3001/deals`);
+      const res = await fetch(`${API_URL}/deals`);
       const data = await res.json();
       setDeals(data);
     }

@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+
 type ListingDetail = {
   id: number;
   id_extern: string;
@@ -42,8 +44,8 @@ export default function ListingDetailPage() {
     async function getData() {
       setLoading(true);
       const [listingRes, historyRes] = await Promise.all([
-        fetch(`http://localhost:3001/listings/${id}`),
-        fetch(`http://localhost:3001/listings/${id}/price_history`),
+        fetch(`${API_URL}/listings/${id}`),
+        fetch(`${API_URL}listings/${id}/price_history`),
       ]);
       const listingData = await listingRes.json();
       const historyData = await historyRes.json();

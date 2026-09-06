@@ -2,6 +2,8 @@
 import { useEffect, useState } from "react";
 import PriceChartSection from "./components/PriceChartSection";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+
 type Deal = {
   id: string;
   zone: string;
@@ -21,7 +23,7 @@ export default function Home() {
   });
   useEffect(() => {
     async function getData() {
-      const res = await fetch(`http://localhost:3001/stats`);
+      const res = await fetch(`${API_URL}/stats`);
       const data = await res.json();
       setStats(data);
     }
