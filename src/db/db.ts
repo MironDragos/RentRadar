@@ -4,12 +4,14 @@ import { Pool } from "pg";
 export const DB = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false },
+  max: 5,
+  idleTimeoutMillis: 10000,
+  connectionTimeoutMillis: 5000,
 });
 
 DB.on("error", (err) => {
   console.error("DB pool error:", err);
 });
-
 DB.connect()
   .then((client) => {
     console.log("DB connected OK");
