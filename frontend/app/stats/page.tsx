@@ -70,7 +70,7 @@ export default function StatsPage() {
       {/* GRAFIC EVOLUȚIE */}
       <div className="mt-16">
         <h2 className="mb-8 font-display text-2xl tracking-wide">
-          EVOLUȚIA PREȚULUI MEDIU LA CHIRIE
+          EVOLUȚIA PREȚULUI MEDIU M2
         </h2>
         <PriceChartSection data={overView.avgPricem2History} />
       </div>

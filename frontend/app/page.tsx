@@ -19,20 +19,26 @@ export default function Home() {
     avgPriceChirie: "",
     avgPriceVanzare: "",
     avgPricem2History: [],
-    dealsFirstPage: [],
   });
+  const [deals, setDeals] = useState<Deal[]>([]);
+
   useEffect(() => {
     async function getData() {
-      const res = await fetch(`${API_URL}/stats`);
-      const data = await res.json();
-      setStats((prev) => ({ ...prev, ...data }));
+      const [statsRes, dealsRes] = await Promise.all([
+        fetch(`${API_URL}/stats`),
+        fetch(`${API_URL}/deals`),
+      ]);
+      const statsData = await statsRes.json();
+      const dealsData = await dealsRes.json();
+      setStats((prev) => ({ ...prev, ...statsData }));
+      setDeals(dealsData.dealsVanzare.slice(0, 3));
     }
     getData();
   }, []);
+
   const totalListings = stats.totalListings;
   const avgRent = stats.avgPriceChirie;
   const avgSale = stats.avgPriceVanzare;
-  const dealsFirstPage = stats.dealsFirstPage;
 
   return (
     <main className="mx-auto max-w-6xl px-6">
@@ -95,12 +101,9 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-1 gap-px bg-line md:grid-cols-3">
-          {dealsFirstPage.map((deal: Deal) => (
-            <a href={`/listings/${deal.id}`}>
-              <div
-                key={deal.id}
-                className="bg-panel hover:bg-bg transition p-6"
-              >
+          {deals.map((deal: Deal) => (
+            <a key={deal.id} href={`/listings/${deal.id}`}>
+              <div className="bg-panel hover:bg-bg transition p-6">
                 <h3 className="mt-2 font-body text-lg font-bold">
                   {deal.rooms === 0
                     ? "Garsoniera"
