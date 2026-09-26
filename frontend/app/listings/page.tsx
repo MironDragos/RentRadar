@@ -28,6 +28,7 @@ export default function ListingsPage() {
   const [offerType, setOfferType] = useState<string | "Toate">("Toate");
   const [sector, setSector] = useState("Toate");
   const [maxPrice, setMaxPrice] = useState(500000);
+  const [displayPrice, setDisplayPrice] = useState(500000);
   const [page, setPage] = useState(1);
   const priceCeiling =
     offerType === "Vând" || offerType === "Toate"
@@ -57,13 +58,14 @@ export default function ListingsPage() {
 
   function updateOfferType(next: string | "Toate") {
     setOfferType(next);
-    setMaxPrice(
+    const reset =
       next === "Vând" || next === "Toate"
         ? 500000
         : next === "De închiriat lunar"
           ? 5000
-          : 2000,
-    );
+          : 2000;
+    setMaxPrice(reset);
+    setDisplayPrice(reset);
     setPage(1);
   }
 
@@ -133,15 +135,17 @@ export default function ListingsPage() {
 
         <div className="flex flex-col gap-2">
           <span className="font-mono text-[11px] uppercase tracking-widest text-text/50">
-            Preț maxim: {maxPrice.toLocaleString("ro-RO")} €
+            Preț maxim: {displayPrice.toLocaleString("ro-RO")} €
           </span>
           <input
             type="range"
             min={offerType === "vanzare" ? 10000 : 100}
             max={priceCeiling}
             step={offerType === "vanzare" ? 1000 : 10}
-            value={maxPrice}
-            onChange={(e) => updateMaxPrice(Number(e.target.value))}
+            value={displayPrice}
+            onChange={(e) => setDisplayPrice(Number(e.target.value))}
+            onMouseUp={(e) => updateMaxPrice(Number(e.currentTarget.value))}
+            onTouchEnd={(e) => updateMaxPrice(Number(e.currentTarget.value))}
             className="w-56 accent-accent"
           />
         </div>
