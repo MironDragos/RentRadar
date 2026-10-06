@@ -72,7 +72,7 @@ export default function StatsPage() {
         <h2 className="mb-8 font-display text-2xl tracking-wide">
           EVOLUȚIA PREȚULUI MEDIU M2
         </h2>
-        <PriceChartSection data={overView.avgPricem2History} />
+        <PriceChartSection data={overView.avgPricem2History.toReversed()} />
       </div>
 
       {/* PE SECTOARE — chirie + vânzare una lângă alta */}

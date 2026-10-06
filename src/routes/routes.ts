@@ -21,6 +21,7 @@ app.get("/listings", async (req, res) => {
     const offer_type = req.query.offer_type as string | undefined;
     const zone = req.query.zone as string | undefined;
     const maxPrice = req.query.maxPrice as string | undefined;
+    const active = req.query.active as string | undefined;
 
     const conditions: string[] = [];
     const params: any[] = [];
@@ -36,6 +37,10 @@ app.get("/listings", async (req, res) => {
     if (maxPrice) {
       params.push(maxPrice);
       conditions.push(`price <= $${params.length}`);
+    }
+    if (active === "true" || active === "false") {
+      params.push(active === "true");
+      conditions.push(`active = $${params.length}`);
     }
 
     const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";

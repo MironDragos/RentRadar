@@ -20,6 +20,11 @@ const OFFER_TYPES: Array<{ label: string; value: string | "Toate" }> = [
   { label: "Chirie lunară", value: "De închiriat lunar" },
   { label: "Chirie zilnică", value: "De închiriat pe zi" },
 ];
+const STATUS_OPTIONS = [
+  { label: "Active", value: "active" },
+  { label: "Inactive", value: "inactive" },
+  { label: "Ambele", value: "all" },
+] as const;
 const PAGE_SIZE = 12;
 
 export default function ListingsPage() {
@@ -27,6 +32,8 @@ export default function ListingsPage() {
   const [total, setTotal] = useState(0);
   const [offerType, setOfferType] = useState<string | "Toate">("Toate");
   const [sector, setSector] = useState("Toate");
+  const [status, setStatus] =
+    useState<(typeof STATUS_OPTIONS)[number]["value"]>("all");
   const [maxPrice, setMaxPrice] = useState(500000);
   const [displayPrice, setDisplayPrice] = useState(500000);
   const [page, setPage] = useState(1);
@@ -44,6 +51,7 @@ export default function ListingsPage() {
       params.set("limit", String(PAGE_SIZE));
       if (offerType !== "Toate") params.set("offer_type", offerType);
       if (sector !== "Toate") params.set("zone", sector);
+      if (status !== "all") params.set("active", String(status === "active"));
       params.set("maxPrice", String(maxPrice));
 
       const res = await fetch(`${API_URL}/listings?${params}`);
@@ -52,7 +60,7 @@ export default function ListingsPage() {
       setTotal(Number(data.total[0].count));
     }
     getData();
-  }, [page, offerType, sector, maxPrice]);
+  }, [page, offerType, sector, status, maxPrice]);
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
@@ -71,6 +79,11 @@ export default function ListingsPage() {
 
   function updateSector(next: string) {
     setSector(next);
+    setPage(1);
+  }
+
+  function updateStatus(next: (typeof STATUS_OPTIONS)[number]["value"]) {
+    setStatus(next);
     setPage(1);
   }
 
@@ -128,6 +141,27 @@ export default function ListingsPage() {
                 }`}
               >
                 {s}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <span className="font-mono text-[11px] uppercase tracking-widest text-text/50">
+            Status
+          </span>
+          <div className="flex gap-px bg-line">
+            {STATUS_OPTIONS.map((option) => (
+              <button
+                key={option.value}
+                onClick={() => updateStatus(option.value)}
+                className={`px-3 py-2 font-mono text-xs uppercase tracking-widest ${
+                  status === option.value
+                    ? "bg-accent text-bg"
+                    : "bg-bg text-text/70 hover:text-text"
+                }`}
+              >
+                {option.label}
               </button>
             ))}
           </div>
