@@ -41,13 +41,13 @@ export default function Home() {
   const avgSale = stats.avgPriceVanzare;
 
   return (
-    <main className="mx-auto max-w-6xl px-6">
-      <section className="grid grid-cols-1 gap-px border border-line bg-line py-20 md:grid-cols-[1fr_1.3fr]">
-        <div className="flex flex-col justify-center gap-4 bg-bg px-8 py-10">
+    <main className="mx-auto max-w-6xl px-4 sm:px-6">
+      <section className="grid grid-cols-1 gap-px border border-line bg-line py-8 sm:py-12 md:py-20 md:grid-cols-[1fr_1.3fr]">
+        <div className="flex flex-col justify-center gap-4 bg-bg px-5 py-8 sm:px-8 sm:py-10">
           <p className="font-mono text-xs uppercase tracking-widest text-accent">
             999.md · urmărit zilnic
           </p>
-          <h1 className="font-display text-5xl leading-[0.95] tracking-wide md:text-6xl">
+          <h1 className="font-display text-4xl leading-[0.95] tracking-wide sm:text-5xl md:text-6xl">
             PIAȚA
             <br />
             IMOBILIARĂ
@@ -78,9 +78,9 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="border border-t-0 border-line px-8 py-12">
-        <div className="mb-8 flex items-baseline justify-between">
-          <h2 className="font-display text-2xl tracking-wide">
+      <section className="border border-t-0 border-line px-4 py-8 sm:px-8 sm:py-12">
+        <div className="mb-6 flex flex-col gap-2 sm:mb-8 sm:flex-row sm:items-baseline sm:justify-between">
+          <h2 className="font-display text-xl tracking-wide sm:text-2xl">
             EVOLUȚIA PREȚULUI MEDIU
           </h2>
           <span className="font-mono text-xs uppercase tracking-widest text-text/50">
@@ -89,9 +89,9 @@ export default function Home() {
         </div>
         <PriceChartSection data={stats.avgPricem2History.toReversed()} />
       </section>
-      <section className="border border-t-0 border-line px-8 py-12">
-        <div className="mb-8 flex items-baseline justify-between">
-          <h2 className="font-display text-2xl tracking-wide">OFERTE BOMBĂ</h2>
+      <section className="border border-t-0 border-line px-4 py-8 sm:px-8 sm:py-12">
+        <div className="mb-6 flex flex-col gap-2 sm:mb-8 sm:flex-row sm:items-baseline sm:justify-between">
+          <h2 className="font-display text-xl tracking-wide sm:text-2xl">OFERTE BOMBĂ</h2>
           <a
             href="/deals"
             className="font-mono text-xs uppercase tracking-widest text-accent hover:underline"
@@ -103,7 +103,7 @@ export default function Home() {
         <div className="grid grid-cols-1 gap-px bg-line md:grid-cols-3">
           {deals.map((deal: Deal) => (
             <a key={deal.id} href={`/listings/${deal.id}`}>
-              <div className="bg-panel hover:bg-bg transition p-6">
+              <div className="bg-panel p-4 transition hover:bg-bg sm:p-6">
                 <h3 className="mt-2 font-body text-lg font-bold">
                   {deal.rooms === 0
                     ? "Garsoniera"

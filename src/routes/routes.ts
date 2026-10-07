@@ -12,16 +12,34 @@ const allowedOrigins = [
 app.use(cors({ origin: allowedOrigins }));
 app.use(express.json());
 
+const LISTING_SORTS = {
+  newest: "first_date DESC NULLS LAST, id DESC",
+  price_asc: "price ASC, id DESC",
+  price_desc: "price DESC, id DESC",
+  area_asc: "m2 ASC, id DESC",
+  area_desc: "m2 DESC, id DESC",
+} as const;
+
 app.get("/listings", async (req, res) => {
   try {
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 20;
+    const requestedPage = Number(req.query.page);
+    const requestedLimit = Number(req.query.limit);
+    const page =
+      Number.isInteger(requestedPage) && requestedPage > 0
+        ? requestedPage
+        : 1;
+    const limit =
+      Number.isInteger(requestedLimit) && requestedLimit > 0
+        ? Math.min(requestedLimit, 100)
+        : 20;
     const offset = (page - 1) * limit;
 
     const offer_type = req.query.offer_type as string | undefined;
     const zone = req.query.zone as string | undefined;
-    const maxPrice = req.query.maxPrice as string | undefined;
+    const maxPrice = Number(req.query.maxPrice);
     const active = req.query.active as string | undefined;
+    const sortKey = req.query.sort as keyof typeof LISTING_SORTS | undefined;
+    const sort = sortKey && LISTING_SORTS[sortKey] ? LISTING_SORTS[sortKey] : LISTING_SORTS.newest;
 
     const conditions: string[] = [];
     const params: any[] = [];
@@ -34,7 +52,7 @@ app.get("/listings", async (req, res) => {
       params.push(zone);
       conditions.push(`zone = $${params.length}`);
     }
-    if (maxPrice) {
+    if (Number.isFinite(maxPrice) && maxPrice >= 0) {
       params.push(maxPrice);
       conditions.push(`price <= $${params.length}`);
     }
@@ -49,7 +67,7 @@ app.get("/listings", async (req, res) => {
     const total = await DB.query(totalQuery, params);
 
     params.push(limit, offset);
-    const dataQuery = `SELECT * FROM listing ${where} LIMIT $${params.length - 1} OFFSET $${params.length}`;
+    const dataQuery = `SELECT * FROM listing ${where} ORDER BY ${sort} LIMIT $${params.length - 1} OFFSET $${params.length}`;
     const rezultat = await DB.query(dataQuery, params);
 
     res.json({ listing: rezultat.rows, total: total.rows });

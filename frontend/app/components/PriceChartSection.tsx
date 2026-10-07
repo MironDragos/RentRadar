@@ -7,11 +7,10 @@ type PricePoint = {
 };
 
 export default function PriceChartSection({ data }: { data: PricePoint[] }) {
+  const [activeIndex, setActiveIndex] = useState(Math.max(data.length - 1, 0));
   if (!data || data.length === 0) {
     return null;
   }
-
-  const [activeIndex, setActiveIndex] = useState(data.length - 1);
   const active = data[activeIndex];
 
   const width = 700;
@@ -31,7 +30,7 @@ export default function PriceChartSection({ data }: { data: PricePoint[] }) {
 
   return (
     <div className="grid grid-cols-1 gap-px border border-line bg-line md:grid-cols-[2fr_1fr]">
-      <div className="bg-bg p-8">
+      <div className="bg-bg p-4 sm:p-8">
         <svg
           viewBox={`0 0 ${width} ${height}`}
           className="w-full cursor-crosshair"
@@ -91,7 +90,7 @@ export default function PriceChartSection({ data }: { data: PricePoint[] }) {
           ))}
         </svg>
 
-        <div className="mt-2 flex justify-between font-mono text-[10px] uppercase tracking-widest text-text/40">
+        <div className="mt-2 flex justify-between gap-2 overflow-hidden font-mono text-[9px] uppercase tracking-widest text-text/40 sm:text-[10px]">
           {data.map((d, i) => (
             <button
               key={i}
@@ -103,12 +102,12 @@ export default function PriceChartSection({ data }: { data: PricePoint[] }) {
           ))}
         </div>
       </div>{" "}
-      <div className="flex flex-col justify-between bg-panel p-8">
+      <div className="flex flex-col justify-between bg-panel p-5 sm:p-8">
         <div>
           <span className="font-mono text-[11px] uppercase tracking-widest text-text/50">
             Ziua {activeIndex + 1}
           </span>
-          <p className="mt-3 font-mono text-4xl text-accent">
+          <p className="mt-3 font-mono text-3xl text-accent sm:text-4xl">
             {active ? Number(active.avg_vanzare_m2).toFixed(2) : "0.00"} €
           </p>
         </div>

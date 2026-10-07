@@ -69,7 +69,7 @@ export default function ListingDetailPage() {
 
   if (loading) {
     return (
-      <main className="mx-auto max-w-4xl px-6 py-16">
+      <main className="mx-auto max-w-4xl px-4 py-10 sm:px-6 sm:py-16">
         <p className="font-mono text-xs uppercase tracking-widest text-text/50">
           Se încarcă...
         </p>
@@ -79,7 +79,7 @@ export default function ListingDetailPage() {
 
   if (notFound || !listing) {
     return (
-      <main className="mx-auto max-w-4xl px-6 py-16">
+      <main className="mx-auto max-w-4xl px-4 py-10 sm:px-6 sm:py-16">
         <p className="font-mono text-xs uppercase tracking-widest text-text/50">
           Anunțul nu a fost găsit.
         </p>
@@ -111,7 +111,7 @@ export default function ListingDetailPage() {
   ];
 
   return (
-    <main className="mx-auto max-w-4xl px-6 py-16">
+    <main className="mx-auto max-w-4xl px-4 py-10 sm:px-6 sm:py-16">
       <Link
         href="/listings"
         className="font-mono text-xs uppercase tracking-widest text-text/50 hover:text-accent"
@@ -119,7 +119,7 @@ export default function ListingDetailPage() {
         ← Înapoi la anunțuri
       </Link>
 
-      <div className="mt-6 mb-10 flex items-start justify-between gap-6">
+      <div className="mt-6 mb-8 flex flex-col items-start justify-between gap-4 sm:mb-10 sm:flex-row sm:gap-6">
         <div>
           <p className="font-mono text-xs uppercase tracking-widest text-accent">
             {listing.offer_type}
@@ -127,12 +127,12 @@ export default function ListingDetailPage() {
               <span className="ml-3 text-text/40">· Inactiv</span>
             )}
           </p>
-          <h1 className="mt-2 font-display text-3xl tracking-wide md:text-4xl">
+          <h1 className="mt-2 font-display text-2xl tracking-wide sm:text-3xl md:text-4xl">
             {listing.title}
           </h1>
         </div>
-        <div className="shrink-0 text-right">
-          <p className="font-mono text-3xl text-accent">
+        <div className="shrink-0 text-left sm:text-right">
+          <p className="font-mono text-2xl text-accent sm:text-3xl">
             {listing.price.toLocaleString("ro-RO")} €
           </p>
           <p className="font-mono text-xs text-text/50">
@@ -169,7 +169,7 @@ export default function ListingDetailPage() {
               return (
                 <div
                   key={change.id}
-                  className={`flex items-center justify-between px-6 py-3 ${
+                  className={`flex flex-col items-start gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6 ${
                     i !== 0 ? "border-t border-line" : ""
                   }`}
                 >

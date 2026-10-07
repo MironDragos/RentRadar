@@ -30,12 +30,12 @@ export default function StatsPage() {
   const maxChirie = Math.max(...bySector.map((s) => s.avgchirie));
   const maxVanzare = Math.max(...bySector.map((s) => s.avgvanzare));
   return (
-    <main className="mx-auto max-w-6xl px-6 py-16">
+    <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-16">
       <div className="mb-10">
         <p className="font-mono text-xs uppercase tracking-widest text-accent">
           date live
         </p>
-        <h1 className="mt-2 font-display text-4xl tracking-wide md:text-5xl">
+        <h1 className="mt-2 font-display text-3xl tracking-wide sm:text-4xl md:text-5xl">
           STATISTICI
         </h1>
         <p className="mt-3 max-w-md font-body text-sm text-text/70">
@@ -44,7 +44,7 @@ export default function StatsPage() {
       </div>
 
       {/* GRID GENERAL — 6 ferestre */}
-      <div className="grid grid-cols-2 gap-px border border-line bg-line md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-px border border-line bg-line sm:grid-cols-2 md:grid-cols-3">
         <StatWindow
           label="Anunțuri active"
           value={overView.totalListings}
@@ -81,7 +81,7 @@ export default function StatsPage() {
           PREȚ MEDIU PE SECTOR
         </h2>
         <div className="border border-line">
-          <div className="grid grid-cols-[1fr_auto] gap-4 border-b border-line px-6 py-3 font-mono text-[11px] uppercase tracking-widest text-text/50">
+          <div className="grid grid-cols-[1fr_auto] gap-3 border-b border-line px-4 py-3 font-mono text-[10px] uppercase tracking-widest text-text/50 sm:gap-4 sm:px-6 sm:text-[11px]">
             <span>Sector</span>
             <span>Chirie · Vânzare</span>
           </div>
@@ -90,7 +90,7 @@ export default function StatsPage() {
             .map((s, i) => (
               <div
                 key={s.zone}
-                className={`grid grid-cols-[1fr_auto] items-center gap-4 px-6 py-4 ${
+                className={`grid grid-cols-[1fr_auto] items-center gap-3 px-4 py-4 sm:gap-4 sm:px-6 ${
                   i !== 0 ? "border-t border-line" : ""
                 }`}
               >

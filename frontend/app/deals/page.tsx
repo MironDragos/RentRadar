@@ -46,12 +46,12 @@ export default function DealsPage() {
   }, [filter, deals]);
 
   return (
-    <main className="mx-auto max-w-6xl px-6 py-16">
+    <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-16">
       <div className="mb-10">
         <p className="font-mono text-xs uppercase tracking-widest text-accent">
           actualizat zilnic
         </p>
-        <h1 className="mt-2 font-display text-4xl tracking-wide md:text-5xl">
+        <h1 className="mt-2 font-display text-3xl tracking-wide sm:text-4xl md:text-5xl">
           OFERTE BOMBĂ
         </h1>
         <p className="mt-3 max-w-md font-body text-sm text-text/70">
@@ -60,12 +60,12 @@ export default function DealsPage() {
         </p>
       </div>
 
-      <div className="mb-8 flex gap-px bg-line">
+      <div className="mb-8 flex flex-wrap gap-px bg-line">
         {FILTERS.map((f) => (
           <button
             key={f.value}
             onClick={() => setFilter(f.value)}
-            className={`px-4 py-2 font-mono text-xs uppercase tracking-widest ${
+            className={`flex-1 px-4 py-2 font-mono text-xs uppercase tracking-widest sm:flex-none ${
               filter === f.value
                 ? "bg-accent text-bg"
                 : "bg-panel text-text/70 hover:text-text"
@@ -78,8 +78,8 @@ export default function DealsPage() {
 
       <div className="grid grid-cols-1 gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
         {filtered.map((deal: Deal) => (
-          <a href={`/listings/${deal.id}`}>
-            <div key={deal.id} className="bg-panel hover:bg-bg transition p-6">
+          <a key={deal.id} href={`/listings/${deal.id}`}>
+            <div className="bg-panel p-4 transition hover:bg-bg sm:p-6">
               <div className="flex items-baseline justify-between">
                 <p className="font-mono text-[11px] uppercase tracking-widest text-text/40">
                   {filter}
